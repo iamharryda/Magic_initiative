@@ -1,3 +1,5 @@
+import { FaFacebookF, FaInstagram, FaLinkedinIn, FaMapMarkerAlt, FaPhoneAlt, FaEnvelope } from "react-icons/fa";
+
 const Footer = () => {
   return (
     <footer className="bg-[#7b1e1e] text-white py-10 px-6 text-center">
@@ -7,16 +9,18 @@ const Footer = () => {
       </p>
 
       {/* Location & Contact */}
-      <div className="mt-5 space-y-2 text-sm sm:text-base text-gray-100 max-w-3xl mx-auto">
-        <p className="leading-relaxed">
-          📍 Ground floor of Khadiza Bhaban, Rumairchora, Cox’s Bazar —
-          opposite Cox’s Bazar Hashemia Kamil Master’s Madrasa.
+      <div className="mt-5 space-y-3 text-sm sm:text-base text-gray-100 max-w-3xl mx-auto">
+        <p className="flex items-center justify-center gap-2 leading-relaxed">
+          <FaMapMarkerAlt className="text-white/90" />
+          Ground floor of Khadiza Bhaban, Rumairchora, Cox’s Bazar — opposite
+          Cox’s Bazar Hashemia Kamil Master’s Madrasa.
         </p>
-        <p>
-          📞 +880&nbsp;1643-196126,&nbsp;+880&nbsp;1878-554154
+        <p className="flex items-center justify-center gap-2">
+          <FaPhoneAlt className="text-white/90" />
+          <span>+880 1643-196126,&nbsp;+880 1878-554154</span>
         </p>
-        <p>
-          ✉️{" "}
+        <p className="flex items-center justify-center gap-2">
+          <FaEnvelope className="text-white/90" />
           <a
             href="mailto:info@magicinitiative.org"
             className="underline hover:text-gray-200 transition-colors"
@@ -35,23 +39,25 @@ const Footer = () => {
           href="https://www.facebook.com/share/1G66vFm4nf/"
           target="_blank"
           rel="noopener noreferrer"
-          className="hover:text-gray-200 transition-colors text-sm sm:text-base"
+          className="flex items-center gap-2 hover:text-gray-200 transition-colors text-sm sm:text-base"
         >
-          Facebook
+          <FaFacebookF className="text-lg" /> Facebook
         </a>
         <a
           href="https://www.instagram.com/magicinitiative/?utm_source=qr&igsh=MWtpczV0amtrdjEyYg%3D%3D#"
           target="_blank"
           rel="noopener noreferrer"
-          className="hover:text-gray-200 transition-colors text-sm sm:text-base"
+          className="flex items-center gap-2 hover:text-gray-200 transition-colors text-sm sm:text-base"
         >
-          Instagram
+          <FaInstagram className="text-lg" /> Instagram
         </a>
         <a
           href="#"
-          className="hover:text-gray-200 transition-colors text-sm sm:text-base"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 hover:text-gray-200 transition-colors text-sm sm:text-base"
         >
-          LinkedIn
+          <FaLinkedinIn className="text-lg" /> LinkedIn
         </a>
       </div>
     </footer>

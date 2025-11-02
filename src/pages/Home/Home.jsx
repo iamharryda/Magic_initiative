@@ -29,7 +29,7 @@ const HomePage = () => {
     transition={{ duration: 1.2 }}
   >
     <motion.div
-  className="inline-flex items-center gap-2 mb-4 sm:mb-6 px-4 py-2 bg-[#a12323]/20 border border-[#a12323] rounded-full"
+  className="inline-flex items-center gap-2 mb-4 sm:mb-6 px-4 py-2 bg-[#a12323]/20 border border-[#07fd38] rounded-full"
   initial={{ opacity: 0, scale: 0.8 }}
   animate={{ opacity: 1, scale: 1 }}
   transition={{ delay: 0.3 }}
@@ -38,13 +38,13 @@ const HomePage = () => {
   <motion.span
     animate={{ opacity: [1, 0.2, 1] }}
     transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
-    className="text-[#a12323] text-3xl leading-none"
+    className="text-[#07fd38] text-3xl leading-none"
   >
     •
   </motion.span>
 
   {/* Text */}
-  <span className="text-[#a12323] font-semibold text-xs sm:text-sm uppercase tracking-wider">
+  <span className="text-[#07fd38] font-semibold text-xs sm:text-sm uppercase tracking-wider">
     Making A Global Impact
   </span>
 </motion.div>

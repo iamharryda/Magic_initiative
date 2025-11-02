@@ -13,7 +13,7 @@ const teamMembers = [
   {
     id: "2",
     name: "Mizanur Rahman",
-    role: "HR Manager",
+    role: "Human Resource Manager",
     image: "https://i.ibb.co/Q78dBTBn/Mizan.png",
     bio: "Oversees human resources and staff development, ensuring an inclusive and empowering work culture."
   },
@@ -48,7 +48,7 @@ const teamMembers = [
   {
     id: "7",
     name: "Sayeed Anwar",
-    role: "IT Officer",
+    role: "Technical Officer",
     image: "https://i.ibb.co/4ZjyRKdr/Sayeed.png",
     bio: "Oversees digital infrastructure, ensuring smooth technological operations and web presence for the organization."
   },
@@ -138,7 +138,6 @@ function TeamPage() {
             members={teamMembers}
             title="Meet Our Team"
             titleSize="2xl"
-            autoPlay={4000}
             onMemberChange={(member, index) => {
               console.log("Active member:", member.name);
             }}

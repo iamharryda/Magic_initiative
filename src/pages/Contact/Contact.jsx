@@ -1,31 +1,35 @@
 import React from "react";
 import { motion } from "framer-motion";
+import {
+  FaFacebookF,
+  FaInstagram,
+  FaLinkedinIn,
+  FaEnvelope,
+  FaPhoneAlt,
+  FaMapMarkerAlt,
+} from "react-icons/fa";
 
 const ContactPage = () => {
   const socials = [
     {
       name: "Facebook",
       href: "https://www.facebook.com/share/1G66vFm4nf/",
-      icon: "📘",
-      color: "hover:bg-[#7b1e1e] hover:text-white border-[#7b1e1e]",
+      icon: <FaFacebookF size={28} />,
     },
     {
       name: "Instagram",
       href: "https://www.instagram.com/magicinitiative/?utm_source=qr&igsh=MWtpczV0amtrdjEyYg%3D%3D#",
-      icon: "📸",
-      color: "hover:bg-[#7b1e1e] hover:text-white border-[#7b1e1e]",
+      icon: <FaInstagram size={28} />,
     },
     {
       name: "LinkedIn",
       href: "#",
-      icon: "💼",
-      color: "hover:bg-[#7b1e1e] hover:text-white border-[#7b1e1e]",
+      icon: <FaLinkedinIn size={28} />,
     },
     {
       name: "Email",
       href: "mailto:info@magicinitiative.org",
-      icon: "✉️",
-      color: "hover:bg-[#7b1e1e] hover:text-white border-[#7b1e1e]",
+      icon: <FaEnvelope size={28} />,
     },
   ];
 
@@ -80,21 +84,30 @@ const ContactPage = () => {
 
         {/* Contact Info Section */}
         <motion.div
-          className="space-y-3 mb-10 text-gray-700"
+          className="space-y-4 mb-10 text-gray-700 text-left sm:text-center"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 0.8 }}
         >
-          <p className="text-lg sm:text-xl font-medium">
-            <span className="text-[#7b1e1e] font-semibold">📞 Contact:</span>{" "}
-            +880&nbsp;1643-196126,&nbsp;+880&nbsp;1878-554154
+          <p className="flex justify-center items-center gap-3 text-lg sm:text-xl font-medium">
+            <FaPhoneAlt className="text-[#7b1e1e]" />
+            <span>
+              <span className="text-[#7b1e1e] font-semibold">Contact:</span>{" "}
+              +880&nbsp;1643-196126,&nbsp;+880&nbsp;1878-554154
+            </span>
           </p>
-          <p className="text-lg sm:text-xl font-medium">
-            <span className="text-[#7b1e1e] font-semibold">📍 Location:</span>{" "}
-            Ground floor of Khadiza Bhaban, Rumairchora, Cox’s Bazar — opposite Cox’s Bazar Hashemia Kamil Master’s Madrasa.
+
+          <p className="flex justify-center items-center gap-3 text-lg sm:text-xl font-medium max-w-3xl mx-auto leading-relaxed">
+            <FaMapMarkerAlt className="text-[#7b1e1e]" />
+            <span>
+              <span className="text-[#7b1e1e] font-semibold">Location:</span>{" "}
+              Ground floor of Khadiza Bhaban, Rumairchora, Cox’s Bazar — opposite
+              Cox’s Bazar Hashemia Kamil Master’s Madrasa.
+            </span>
           </p>
-          <p className="text-lg sm:text-xl font-medium">
-            <span className="text-[#7b1e1e] font-semibold">✉️ Email:</span>{" "}
+
+          <p className="flex justify-center items-center gap-3 text-lg sm:text-xl font-medium">
+            <FaEnvelope className="text-[#7b1e1e]" />
             <a
               href="mailto:info@magicinitiative.org"
               className="text-[#7b1e1e] underline hover:text-[#4a0e0e] transition-colors"
@@ -117,18 +130,13 @@ const ContactPage = () => {
               href={social.href}
               target="_blank"
               rel="noopener noreferrer"
-              className={`flex flex-col items-center justify-center bg-white border rounded-xl py-8 px-6 shadow-md transition-all duration-300 ${social.color}`}
-              whileHover={{ scale: 1.08, y: -5 }}
+              className="flex flex-col items-center justify-center bg-white border border-gray-200 rounded-xl py-8 px-6 shadow-md transition-all duration-300 hover:shadow-xl hover:scale-110 hover:-translate-y-2"
               whileTap={{ scale: 0.95 }}
             >
               <motion.div
-                className="text-5xl mb-4"
+                className="text-[#7b1e1e] mb-4 text-5xl"
                 animate={{ rotate: [0, 10, -10, 0] }}
-                transition={{
-                  repeat: Infinity,
-                  repeatDelay: 3,
-                  duration: 2.5,
-                }}
+                transition={{ repeat: Infinity, repeatDelay: 3, duration: 2.5 }}
               >
                 {social.icon}
               </motion.div>
