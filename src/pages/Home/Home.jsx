@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { FaBook, FaSeedling, FaUsers, FaChalkboardTeacher, FaHeart, FaLeaf } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 
 const HomePage = () => {
@@ -118,12 +119,12 @@ const HomePage = () => {
               Innovation & Climate-Resilient Communities) empowers underprivileged children and
               communities through education, innovation, and sustainability.
             </p>
-            <a
-              href="#about-us"
+            <Link
+              to="/mission"
               className="inline-block bg-[#7b1e1e] hover:bg-[#611515] text-white font-medium px-6 py-3 rounded-full transition-all duration-300"
             >
               Read Our Story
-            </a>
+            </Link>
           </motion.div>
           <motion.div
             className="rounded-2xl overflow-hidden shadow-lg"
