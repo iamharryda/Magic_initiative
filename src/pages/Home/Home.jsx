@@ -7,55 +7,58 @@ import { Link } from "react-router-dom";
 
 const HomePage = () => {
   return (
-    <div className="bg-stone-50 text-gray-800">
+    // 🚀 Add overflow-x-hidden to prevent horizontal scroll
+    <div className="bg-stone-50 text-gray-800 overflow-x-hidden">
 
       {/* 🌟 HERO SECTION */}
-<section className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-stone-100">
-  {/* Background Image */}
-  <div className="absolute inset-0">
-    <img
-      src="https://i.ibb.co/7FzVGZJ/DSC07903.jpg"
-      alt="Children learning at Magic Board School"
-      className="w-full h-full object-cover opacity-70"
-    />
-    {/* Soft Light Gradient Overlay */}
-    <div className="absolute inset-0 bg-gradient-to-r from-[#7b1e1e]/30 via-[#7b1e1e]/20 to-[#7b1e1e]/10"></div>
-  </div>
+      <section className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-stone-100">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <img
+            src="https://i.ibb.co/7FzVGZJ/DSC07903.jpg"
+            alt="Children learning at Magic Board School"
+            className="w-full h-full object-cover opacity-70"
+          />
+          {/* Soft Light Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#7b1e1e]/30 via-[#7b1e1e]/20 to-[#7b1e1e]/10"></div>
+        </div>
 
-  {/* Hero Content */}
-  <motion.div
-    className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 md:py-32"
-    initial={{ opacity: 0, y: 30 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 1.2 }}
-  >
-    <motion.div
-  className="inline-flex items-center gap-2 mb-4 sm:mb-6 px-4 py-2 bg-[#a12323]/20 border border-[#07fd38] rounded-full"
-  initial={{ opacity: 0, scale: 0.8 }}
-  animate={{ opacity: 1, scale: 1 }}
-  transition={{ delay: 0.3 }}
->
-  {/* Pulsing Dot */}
-  <motion.span
-    animate={{ opacity: [1, 0.2, 1] }}
-    transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
-    className="text-[#07fd38] text-3xl leading-none"
-  >
-    •
-  </motion.span>
+        {/* Hero Content */}
+        <motion.div
+          className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 md:py-32"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.2 }}
+        >
+          {/* Badge */}
+          <motion.div
+            className="inline-flex items-center gap-2 mb-4 sm:mb-6 px-4 py-2 bg-[#a12323]/20 border border-[#07fd38] rounded-full"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            {/* Pulsing Dot */}
+            <motion.span
+              animate={{ opacity: [1, 0.2, 1] }}
+              transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+              className="text-[#07fd38] text-3xl leading-none"
+            >
+              •
+            </motion.span>
 
-  {/* Text */}
-  <span className="text-[#07fd38] font-semibold text-xs sm:text-sm uppercase tracking-wider">
-    Making A Global Impact
-  </span>
-</motion.div>
+            {/* Text */}
+            <span className="text-[#07fd38] font-semibold text-xs sm:text-sm uppercase tracking-wider">
+              Making A Global Impact
+            </span>
+          </motion.div>
 
+          {/* Main Title */}
+          <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-[#4a0e0e] leading-tight">
+            Empowering <span className="text-[#7b1e1e]">Young Minds</span>
+            <br className="hidden sm:block" />
+            Building <span className="text-[#7b1e1e]">Climate-Resilient</span> Futures
+          </h1>
 
-    <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-[#4a0e0e] leading-tight">
-      Empowering <span className="text-[#7b1e1e]">Young Minds</span>
-      <br className="hidden sm:block" />
-      Building <span className="text-[#7b1e1e]">Climate-Resilient</span> Futures
-    </h1>
 
     <p className="mt-6 text-lg sm:text-xl text-gray-700 max-w-2xl">
       Join us in shaping a future where education and sustainability go hand in hand.
