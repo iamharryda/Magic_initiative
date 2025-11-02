@@ -1,0 +1,7 @@
+@import "tailwindcss";
+@plugin 'lightswind/plugin';
+
+
+body {
+  @apply bg-gradient-to-br from-sky-100 to-blue-200 min-h-screen text-gray-800;
+}
