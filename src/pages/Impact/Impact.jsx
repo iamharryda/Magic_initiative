@@ -107,7 +107,7 @@ const ImpactPage = () => {
         "Now I can dream of becoming a teacher. Magic Board School gave me hope for a better future.",
       author: "Raisa",
       role: "Student, Age 8",
-      image: "/raisa.jpg",
+      image: "https://i.ibb.co/MxSFCsq9/raisa.jpg",
     },
     {
       quote:
@@ -121,7 +121,7 @@ const ImpactPage = () => {
         "Being part of MAGIC Initiative has shown me the true power of education to transform lives.",
       author: "Volunteer Teacher",
       role: "Magic Board School",
-      image: "/Fahim.png",
+      image: "https://i.ibb.co/609m419t/Abid.png",
     },
   ];
 
