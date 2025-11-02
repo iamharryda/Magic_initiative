@@ -5,11 +5,9 @@ import { motion } from "framer-motion";
 
 export default function Preloader({ onFinish }) {
   useEffect(() => {
-    // Simulate loading (you can replace with real logic)
     const timer = setTimeout(() => {
       onFinish();
-    }, 2000); // 2 seconds
-
+    }, 2000); // Simulated 2s load
     return () => clearTimeout(timer);
   }, [onFinish]);
 
@@ -19,24 +17,24 @@ export default function Preloader({ onFinish }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.6 }}
-      className="fixed inset-0 flex flex-col items-center justify-center-safe bg-[#f8f5f3] z-[9999]"
+      className="fixed inset-0 flex flex-col items-center justify-center bg-[#f8f5f3] z-[9999] text-center px-6"
     >
-      {/* Logo or Icon */}
+      {/* Logo */}
       <motion.img
         src="/Magic Initiative Logo PNG.png"
         alt="MAGIC Initiative"
         initial={{ scale: 0 }}
         animate={{ scale: [0, 1.1, 1] }}
         transition={{ duration: 1, ease: "easeOut" }}
-        className="w-70 h-auto "
+        className="w-40 sm:w-56 md:w-64 lg:w-72 xl:w-80 h-auto mb-6"
       />
 
       {/* Animated Text */}
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: [0, 1, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
-        className=" text-3xl text-[#7b1e1e]"
+        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-[#7b1e1e] font-semibold"
       >
         Empowering communities...
       </motion.p>
