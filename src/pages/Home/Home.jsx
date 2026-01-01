@@ -56,7 +56,7 @@ const HomePage = () => {
           <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-[#4a0e0e] leading-tight">
             Educate. <span className="text-[#7b1e1e]">Empower. </span>
             <br className="hidden sm:block" />
-            Sustain. <span className="text-[#7b1e1e]">Unite.</span> Futures
+            Sustain. <span className="text-[#7b1e1e]">Unite.</span>
           </h1>
 
 
@@ -186,16 +186,7 @@ const HomePage = () => {
           "Now I can dream of becoming a teacher." — <strong>Raisa, Age 8</strong>
         </motion.p>
 
-        <motion.div
-          className="flex flex-wrap justify-center gap-10 text-[#7b1e1e] font-semibold text-lg"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ delay: 0.4, duration: 1 }}
-        >
-          <p>👧 60 Students Educated</p>
-          <p>📚 100+ Books Distributed</p>
-          <p>🏫 1 New School Established</p>
-        </motion.div>
+        
       </section>
 
       {/* 🤝 PARTNERS SECTION */}
