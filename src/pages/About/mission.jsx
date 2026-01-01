@@ -2,6 +2,16 @@
 
 import React from "react";
 import { motion } from "framer-motion";
+import { 
+  FaSeedling, 
+  FaLightbulb, 
+  FaBook, 
+  FaHandsHelping, 
+  FaCheckCircle, 
+  FaBalanceScale,
+  FaBullseye,
+  FaGlobeAmericas
+} from "react-icons/fa";
 
 const MissionVisionPage = () => {
   const coreValues = [
@@ -9,37 +19,37 @@ const MissionVisionPage = () => {
       title: "Sustainability",
       description:
         "We are committed to promoting environmental stewardship and sustainable practices in education, innovation, and community development.",
-      icon: "🌱",
+      icon: FaSeedling,
     },
     {
       title: "Innovation",
       description:
         "We embrace creativity and forward-thinking solutions to address climate challenges, fostering a culture of research, technology, and entrepreneurship.",
-      icon: "💡",
+      icon: FaLightbulb,
     },
     {
       title: "Education & Knowledge Sharing",
       description:
         "We believe in the transformative power of education and prioritize knowledge dissemination to empower individuals and communities.",
-      icon: "📚",
+      icon: FaBook,
     },
     {
       title: "Community Empowerment",
       description:
         "We work collaboratively with local communities, ensuring inclusive participation and leadership in climate resilience and sustainable development initiatives.",
-      icon: "🤝",
+      icon: FaHandsHelping,
     },
     {
       title: "Integrity & Accountability",
       description:
         "We uphold transparency, ethical practices, and accountability in all our activities, ensuring that our work is impactful and responsible.",
-      icon: "✓",
+      icon: FaCheckCircle,
     },
     {
       title: "Equity & Inclusion",
       description:
         "Communities have access to education, resources, and opportunities.",
-      icon: "⚖️",
+      icon: FaBalanceScale,
     },
   ];
 
@@ -115,7 +125,7 @@ const MissionVisionPage = () => {
                   transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
                   className="inline-block mb-6 p-4 bg-[#7b1e1e]/10 rounded-full"
                 >
-                  <span className="text-5xl">🎯</span>
+                  <FaBullseye className="text-5xl text-[#7b1e1e]" />
                 </motion.div>
 
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
@@ -125,12 +135,7 @@ const MissionVisionPage = () => {
                 <div className="h-1 w-20 bg-[#7b1e1e] mb-6"></div>
 
                 <p className="text-base sm:text-lg text-gray-700 leading-relaxed">
-                  The MAGIC Initiative is dedicated to advancing academic
-                  excellence, fostering innovation, and building
-                  climate-resilient communities. Through education, research,
-                  and capacity-building, we empower communities to develop
-                  sustainable solutions that address environmental and social
-                  challenges.
+                  We strengthen communities by empowering children, youth, and women through inclusive and innovative programs that improve education, health and well-being, create sustainable livelihoods, advance climate action, and builds peace and social cohesion.
                 </p>
 
                 <p className="text-base sm:text-lg text-[#7b1e1e] font-semibold mt-6">
@@ -156,15 +161,6 @@ const MissionVisionPage = () => {
                   className="w-full h-full object-cover"
                 />
               </div>
-
-              <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -bottom-6 -right-6 bg-[#7b1e1e] text-white p-6 rounded-xl shadow-xl"
-              >
-                <p className="text-4xl font-bold">60+</p>
-                <p className="text-sm">Children Empowered</p>
-              </motion.div>
             </motion.div>
           </div>
         </div>
@@ -189,20 +185,6 @@ const MissionVisionPage = () => {
                   className="w-full h-full object-cover"
                 />
               </div>
-
-              <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 1,
-                }}
-                className="absolute -top-6 -left-6 bg-white border-2 border-[#7b1e1e] text-[#7b1e1e] p-6 rounded-xl shadow-xl"
-              >
-                <p className="text-4xl font-bold">5</p>
-                <p className="text-sm">Core Programs</p>
-              </motion.div>
             </motion.div>
 
             {/* Vision Text */}
@@ -221,7 +203,7 @@ const MissionVisionPage = () => {
                   transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
                   className="inline-block mb-6 p-4 bg-[#7b1e1e]/10 rounded-full"
                 >
-                  <span className="text-5xl">🌍</span>
+                  <FaGlobeAmericas className="text-5xl text-[#7b1e1e]" />
                 </motion.div>
 
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
@@ -231,9 +213,7 @@ const MissionVisionPage = () => {
                 <div className="h-1 w-20 bg-[#7b1e1e] mb-6"></div>
 
                 <p className="text-base sm:text-lg text-gray-700 leading-relaxed">
-                  We envision a world where education and innovation serve as
-                  catalysts for sustainable development, empowering communities
-                  to thrive in the face of climate challenges.
+                  A just, resilient, and empowered society where everyone has the opportunity to learn, thrive, and contribute to a sustainable future
                 </p>
 
                 <p className="text-base sm:text-lg text-[#7b1e1e] font-semibold mt-6">
@@ -278,22 +258,27 @@ const MissionVisionPage = () => {
             viewport={{ once: true }}
             className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
           >
-            {coreValues.map((value, index) => (
-              <motion.div
-                key={index}
-                variants={itemVariants}
-                whileHover={{ scale: 1.05, y: -5 }}
-                className="bg-white border border-[#7b1e1e]/30 p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300"
-              >
-                <div className="text-5xl mb-4">{value.icon}</div>
-                <h3 className="text-xl sm:text-2xl font-bold mb-4 text-[#4a0e0e]">
-                  {value.title}
-                </h3>
-                <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
-                  {value.description}
-                </p>
-              </motion.div>
-            ))}
+            {coreValues.map((value, index) => {
+              const IconComponent = value.icon;
+              return (
+                <motion.div
+                  key={index}
+                  variants={itemVariants}
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  className="bg-white border border-[#7b1e1e]/30 p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300"
+                >
+                  <div className="mb-4">
+                    <IconComponent className="text-5xl text-[#7b1e1e]" />
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-bold mb-4 text-[#4a0e0e]">
+                    {value.title}
+                  </h3>
+                  <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
+                    {value.description}
+                  </p>
+                </motion.div>
+              );
+            })}
           </motion.div>
         </div>
       </section>

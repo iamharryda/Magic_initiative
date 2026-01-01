@@ -1,43 +1,47 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { 
+  FaTools, 
+  FaBriefcase, 
+  FaLaptop, 
+  FaBullseye, 
+  FaRecycle, 
+  FaClipboardList,
+  FaChalkboardTeacher,
+  FaLightbulb
+} from 'react-icons/fa';
 
 const VocationalTrainingPage = () => {
-  const stats = [
-    { num: "50+", label: "Trainees" },
-    { num: "10+", label: "Skills Taught" },
-    { num: "80%", label: "Job Placement" }
-  ];
-
   const skills = [
     {
       title: "Technical Skills",
       description: "Hands-on training in practical technical skills for immediate employability",
-      icon: "🔧"
+      icon: FaTools
     },
     {
       title: "Entrepreneurship",
       description: "Business development and entrepreneurship training for self-employment",
-      icon: "💼"
+      icon: FaBriefcase
     },
     {
       title: "Digital Literacy",
       description: "Computer skills and digital tools training for the modern workplace",
-      icon: "💻"
+      icon: FaLaptop
     },
     {
       title: "Life Skills",
       description: "Soft skills, communication, and professional development training",
-      icon: "🎯"
+      icon: FaBullseye
     },
     {
       title: "Sustainable Practices",
       description: "Eco-friendly and sustainable vocational skills for green jobs",
-      icon: "♻️"
+      icon: FaRecycle
     },
     {
       title: "Job Readiness",
       description: "Interview preparation, resume building, and career guidance",
-      icon: "📋"
+      icon: FaClipboardList
     }
   ];
 
@@ -111,7 +115,7 @@ const VocationalTrainingPage = () => {
                   transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
                   className="inline-block mb-6 p-4 bg-[#7b1e1e]/10 rounded-full"
                 >
-                  <span className="text-5xl">👨‍🏫</span>
+                  <FaChalkboardTeacher className="text-5xl text-[#7b1e1e]" />
                 </motion.div>
 
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
@@ -144,59 +148,13 @@ const VocationalTrainingPage = () => {
                   className="w-full h-full object-cover"
                 />
               </div>
-
-              <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -bottom-6 -right-6 bg-[#7b1e1e] text-white p-6 rounded-xl shadow-xl"
-              >
-                <p className="text-4xl font-bold">50+</p>
-                <p className="text-sm">Trainees</p>
-              </motion.div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16 sm:py-24 bg-stone-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
-              Our <span className="text-[#7b1e1e]">Impact</span>
-            </h2>
-            <p className="text-lg text-gray-700 max-w-2xl mx-auto">
-              Transforming lives through skills development and job placement
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {stats.map((stat, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.6 }}
-                whileHover={{ scale: 1.05 }}
-                className="bg-white border border-[#7b1e1e]/30 rounded-xl p-8 text-center shadow-sm hover:shadow-lg transition-all"
-              >
-                <p className="text-4xl font-bold text-[#7b1e1e] mb-2">{stat.num}</p>
-                <p className="text-gray-700">{stat.label}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Skills Section */}
-      <section className="py-16 sm:py-24 bg-[#f8f5f3]">
+      <section className="py-16 sm:py-24 bg-stone-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -225,28 +183,33 @@ const VocationalTrainingPage = () => {
             viewport={{ once: true }}
             className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
           >
-            {skills.map((skill, index) => (
-              <motion.div
-                key={index}
-                variants={itemVariants}
-                whileHover={{ scale: 1.05, y: -5 }}
-                className="bg-white border border-[#7b1e1e]/30 p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300"
-              >
-                <div className="text-5xl mb-4">{skill.icon}</div>
-                <h3 className="text-xl sm:text-2xl font-bold mb-4 text-[#4a0e0e]">
-                  {skill.title}
-                </h3>
-                <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
-                  {skill.description}
-                </p>
-              </motion.div>
-            ))}
+            {skills.map((skill, index) => {
+              const IconComponent = skill.icon;
+              return (
+                <motion.div
+                  key={index}
+                  variants={itemVariants}
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  className="bg-white border border-[#7b1e1e]/30 p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300"
+                >
+                  <div className="mb-4">
+                    <IconComponent className="text-5xl text-[#7b1e1e]" />
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-bold mb-4 text-[#4a0e0e]">
+                    {skill.title}
+                  </h3>
+                  <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
+                    {skill.description}
+                  </p>
+                </motion.div>
+              );
+            })}
           </motion.div>
         </div>
       </section>
 
       {/* Vision Section */}
-      <section className="py-16 sm:py-24 bg-stone-50">
+      <section className="py-16 sm:py-24 bg-[#f8f5f3]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
             <motion.div
@@ -263,20 +226,6 @@ const VocationalTrainingPage = () => {
                   className="w-full h-full object-cover"
                 />
               </div>
-
-              <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 1,
-                }}
-                className="absolute -top-6 -left-6 bg-white border-2 border-[#7b1e1e] text-[#7b1e1e] p-6 rounded-xl shadow-xl"
-              >
-                <p className="text-4xl font-bold">80%</p>
-                <p className="text-sm">Job Placement</p>
-              </motion.div>
             </motion.div>
 
             <motion.div
@@ -294,7 +243,7 @@ const VocationalTrainingPage = () => {
                   transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
                   className="inline-block mb-6 p-4 bg-[#7b1e1e]/10 rounded-full"
                 >
-                  <span className="text-5xl">💡</span>
+                  <FaLightbulb className="text-5xl text-[#7b1e1e]" />
                 </motion.div>
 
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">

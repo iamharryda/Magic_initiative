@@ -6,7 +6,7 @@ const teamMembers = [
   {
     id: "1",
     name: "Jimran Mohammad Saiak",
-    role: "CEO / Executive Director",
+    role: "Chief Executive Director",
     image: "https://i.ibb.co/q3M4rdM2/Jimran.png",
     bio: "Founder and Executive Director of MAGIC Initiative, leading education and climate resilience programs in Bangladesh."
   },

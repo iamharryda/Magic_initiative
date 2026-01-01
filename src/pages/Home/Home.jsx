@@ -54,14 +54,14 @@ const HomePage = () => {
 
           {/* Main Title */}
           <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-[#4a0e0e] leading-tight">
-            Empowering <span className="text-[#7b1e1e]">Young Minds</span>
+            Educate. <span className="text-[#7b1e1e]">Empower. </span>
             <br className="hidden sm:block" />
-            Building <span className="text-[#7b1e1e]">Climate-Resilient</span> Futures
+            Sustain. <span className="text-[#7b1e1e]">Unite.</span> Futures
           </h1>
 
 
     <p className="mt-6 text-lg sm:text-xl text-gray-700 max-w-2xl">
-      Join us in shaping a future where education and sustainability go hand in hand.
+      We are shaping a future where education, sustainability, Empowerment, and social cohesion work hand in hand.
     </p>
 
     <div className="mt-8 flex flex-col sm:flex-row flex-wrap gap-4">
@@ -90,19 +90,7 @@ const HomePage = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 1.2, duration: 1 }}
     >
-      {[
-        { num: "60+", label: "Children Empowered" },
-        { num: "5", label: "Community Programs" },
-        { num: "1", label: "Sustainable Vision" },
-      ].map((stat, i) => (
-        <div
-          key={i}
-          className="bg-white border border-[#7b1e1e]/20 rounded-lg p-5 text-center shadow-sm hover:shadow-md transition-all"
-        >
-          <p className="text-3xl font-bold text-[#7b1e1e]">{stat.num}</p>
-          <p className="text-sm text-gray-600 mt-1">{stat.label}</p>
-        </div>
-      ))}
+      
     </motion.div>
   </motion.div>
 </section>

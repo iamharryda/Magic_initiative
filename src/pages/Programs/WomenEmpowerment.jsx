@@ -1,43 +1,47 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { 
+  FaUserTie, 
+  FaBriefcase, 
+  FaGraduationCap, 
+  FaDollarSign, 
+  FaGlobeAmericas, 
+  FaBalanceScale,
+  FaFistRaised,
+  FaStar
+} from 'react-icons/fa';
 
 const WomenEmpowermentPage = () => {
-  const stats = [
-    { num: "40+", label: "Women Trained" },
-    { num: "15", label: "Businesses Started" },
-    { num: "100%", label: "Leadership Focus" }
-  ];
-
   const programs = [
     {
       title: "Leadership Development",
       description: "Empowering women to become leaders in their communities and advocates for change",
-      icon: "👩‍💼"
+      icon: FaUserTie
     },
     {
       title: "Entrepreneurship Training",
       description: "Business skills and entrepreneurship programs for economic independence",
-      icon: "💼"
+      icon: FaBriefcase
     },
     {
       title: "Skills Development",
       description: "Technical and vocational skills training for sustainable livelihoods",
-      icon: "🎓"
+      icon: FaGraduationCap
     },
     {
       title: "Economic Participation",
       description: "Creating opportunities for women's economic participation and growth",
-      icon: "💰"
+      icon: FaDollarSign
     },
     {
       title: "Climate Justice Advocacy",
       description: "Training women to become advocates for climate justice and sustainability",
-      icon: "🌍"
+      icon: FaGlobeAmericas
     },
     {
       title: "Gender Equality",
       description: "Advancing gender equality through education and policy advocacy",
-      icon: "⚖️"
+      icon: FaBalanceScale
     }
   ];
 
@@ -111,7 +115,7 @@ const WomenEmpowermentPage = () => {
                   transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
                   className="inline-block mb-6 p-4 bg-[#7b1e1e]/10 rounded-full"
                 >
-                  <span className="text-5xl">💪</span>
+                  <FaFistRaised className="text-5xl text-[#7b1e1e]" />
                 </motion.div>
 
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
@@ -144,59 +148,13 @@ const WomenEmpowermentPage = () => {
                   className="w-full h-full object-cover"
                 />
               </div>
-
-              <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -bottom-6 -right-6 bg-[#7b1e1e] text-white p-6 rounded-xl shadow-xl"
-              >
-                <p className="text-4xl font-bold">40+</p>
-                <p className="text-sm">Women Trained</p>
-              </motion.div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16 sm:py-24 bg-stone-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
-              Our <span className="text-[#7b1e1e]">Impact</span>
-            </h2>
-            <p className="text-lg text-gray-700 max-w-2xl mx-auto">
-              Empowering women through education, leadership, and economic opportunities
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {stats.map((stat, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.6 }}
-                whileHover={{ scale: 1.05 }}
-                className="bg-white border border-[#7b1e1e]/30 rounded-xl p-8 text-center shadow-sm hover:shadow-lg transition-all"
-              >
-                <p className="text-4xl font-bold text-[#7b1e1e] mb-2">{stat.num}</p>
-                <p className="text-gray-700">{stat.label}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Programs Section */}
-      <section className="py-16 sm:py-24 bg-[#f8f5f3]">
+      <section className="py-16 sm:py-24 bg-stone-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -225,28 +183,33 @@ const WomenEmpowermentPage = () => {
             viewport={{ once: true }}
             className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
           >
-            {programs.map((program, index) => (
-              <motion.div
-                key={index}
-                variants={itemVariants}
-                whileHover={{ scale: 1.05, y: -5 }}
-                className="bg-white border border-[#7b1e1e]/30 p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300"
-              >
-                <div className="text-5xl mb-4">{program.icon}</div>
-                <h3 className="text-xl sm:text-2xl font-bold mb-4 text-[#4a0e0e]">
-                  {program.title}
-                </h3>
-                <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
-                  {program.description}
-                </p>
-              </motion.div>
-            ))}
+            {programs.map((program, index) => {
+              const IconComponent = program.icon;
+              return (
+                <motion.div
+                  key={index}
+                  variants={itemVariants}
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  className="bg-white border border-[#7b1e1e]/30 p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300"
+                >
+                  <div className="mb-4">
+                    <IconComponent className="text-5xl text-[#7b1e1e]" />
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-bold mb-4 text-[#4a0e0e]">
+                    {program.title}
+                  </h3>
+                  <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
+                    {program.description}
+                  </p>
+                </motion.div>
+              );
+            })}
           </motion.div>
         </div>
       </section>
 
       {/* Vision Section */}
-      <section className="py-16 sm:py-24 bg-stone-50">
+      <section className="py-16 sm:py-24 bg-[#f8f5f3]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
             <motion.div
@@ -263,20 +226,6 @@ const WomenEmpowermentPage = () => {
                   className="w-full h-full object-cover"
                 />
               </div>
-
-              <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 1,
-                }}
-                className="absolute -top-6 -left-6 bg-white border-2 border-[#7b1e1e] text-[#7b1e1e] p-6 rounded-xl shadow-xl"
-              >
-                <p className="text-4xl font-bold">15</p>
-                <p className="text-sm">Businesses Started</p>
-              </motion.div>
             </motion.div>
 
             <motion.div
@@ -294,7 +243,7 @@ const WomenEmpowermentPage = () => {
                   transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
                   className="inline-block mb-6 p-4 bg-[#7b1e1e]/10 rounded-full"
                 >
-                  <span className="text-5xl">🌟</span>
+                  <FaStar className="text-5xl text-[#7b1e1e]" />
                 </motion.div>
 
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">

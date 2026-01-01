@@ -45,12 +45,13 @@ const Header2 = () => {
     {
       label: "Programs",
       dropdown: [
-        { href: "/magic", label: "Magic Board School" },
-        { href: "/climate", label: "Climate Action" },
-        { href: "/vocational", label: "Vocational Training" },
-        { href: "/research", label: "Research & Innovation" },
-        { href: "/women", label: "Women Empowerment" },
-        { href: "/health", label: "Health & Well-being" },
+        { href: "/magic", label: "Quality Education (SDG 4)" },
+        { href: "/climate", label: "Climate Action (SDG 13)" },
+        { href: "/vocational", label: "Decent Work & Economic Growth (SDG8)" },
+        { href: "/research", label: "Industry, Innovation & Infrastructure (SDG 9)" },
+        { href: "/women", label: "Gender Equality (SDG 5)" },
+        { href: "/health", label: "Good Health & Well-being (SDG 3)" },
+        { href: "/volunteer", label: "Peace, Justice & Strong Institutions (SDG 16)" },
       ],
     },
     {
@@ -62,6 +63,7 @@ const Header2 = () => {
       dropdown: [
         { href: "/volunteer", label: "Volunteer" },
         { href: "/partner", label: "Partner With Us" },
+        { href: "/partner", label: "Career" },
       ],
     },
     {

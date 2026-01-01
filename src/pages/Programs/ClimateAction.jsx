@@ -1,43 +1,47 @@
-import React from 'react';
+
 import { motion } from 'framer-motion';
+import { 
+  FaGlobeAmericas, 
+  FaGraduationCap, 
+  FaTree, 
+  FaFistRaised, 
+  FaRecycle, 
+  FaBullhorn,
+  FaSeedling
+} from 'react-icons/fa';
+import { FaHandsHoldingCircle } from 'react-icons/fa6';
 
 const ClimateActionPage = () => {
-  const stats = [
-    { num: "100+", label: "Trees Planted" },
-    { num: "20+", label: "Workshops Conducted" },
-    { num: "500+", label: "People Reached" }
-  ];
-
   const initiatives = [
     {
       title: "Community-Based Campaigns",
       description: "Engaging local communities in climate action through awareness campaigns and collective initiatives.",
-      icon: "🌍"
+      icon: FaHandsHoldingCircle
     },
     {
       title: "Workshops & Training",
       description: "Conducting educational workshops on sustainable practices and climate resilience.",
-      icon: "🎓"
+      icon: FaGraduationCap
     },
     {
       title: "Tree Planting Drives",
       description: "Organizing community tree planting activities to combat climate change and restore ecosystems.",
-      icon: "🌳"
+      icon: FaTree
     },
     {
       title: "Youth Leadership",
       description: "Empowering young leaders to become climate advocates and drive environmental change.",
-      icon: "💪"
+      icon: FaFistRaised
     },
     {
       title: "Sustainable Practices",
       description: "Promoting eco-friendly practices in daily life and community activities.",
-      icon: "♻️"
+      icon: FaRecycle
     },
     {
       title: "Policy Advocacy",
       description: "Engaging with policymakers to promote inclusive and sustainable frameworks.",
-      icon: "📢"
+      icon: FaBullhorn
     }
   ];
 
@@ -111,7 +115,7 @@ const ClimateActionPage = () => {
                   transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
                   className="inline-block mb-6 p-4 bg-[#7b1e1e]/10 rounded-full"
                 >
-                  <span className="text-5xl">🌱</span>
+                  <FaSeedling className="text-5xl text-[#7b1e1e]" />
                 </motion.div>
 
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
@@ -144,59 +148,13 @@ const ClimateActionPage = () => {
                   className="w-full h-full object-cover"
                 />
               </div>
-
-              <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -bottom-6 -right-6 bg-[#7b1e1e] text-white p-6 rounded-xl shadow-xl"
-              >
-                <p className="text-4xl font-bold">500+</p>
-                <p className="text-sm">People Reached</p>
-              </motion.div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16 sm:py-24 bg-stone-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
-              Our <span className="text-[#7b1e1e]">Impact</span>
-            </h2>
-            <p className="text-lg text-gray-700 max-w-2xl mx-auto">
-              Creating measurable change in communities through climate action
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {stats.map((stat, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.6 }}
-                whileHover={{ scale: 1.05 }}
-                className="bg-white border border-[#7b1e1e]/30 rounded-xl p-8 text-center shadow-sm hover:shadow-lg transition-all"
-              >
-                <p className="text-4xl font-bold text-[#7b1e1e] mb-2">{stat.num}</p>
-                <p className="text-gray-700">{stat.label}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Initiatives Section */}
-      <section className="py-16 sm:py-24 bg-[#f8f5f3]">
+      <section className="py-16 sm:py-24 bg-stone-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -225,28 +183,33 @@ const ClimateActionPage = () => {
             viewport={{ once: true }}
             className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
           >
-            {initiatives.map((initiative, index) => (
-              <motion.div
-                key={index}
-                variants={itemVariants}
-                whileHover={{ scale: 1.05, y: -5 }}
-                className="bg-white border border-[#7b1e1e]/30 p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300"
-              >
-                <div className="text-5xl mb-4">{initiative.icon}</div>
-                <h3 className="text-xl sm:text-2xl font-bold mb-4 text-[#4a0e0e]">
-                  {initiative.title}
-                </h3>
-                <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
-                  {initiative.description}
-                </p>
-              </motion.div>
-            ))}
+            {initiatives.map((initiative, index) => {
+              const IconComponent = initiative.icon;
+              return (
+                <motion.div
+                  key={index}
+                  variants={itemVariants}
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  className="bg-white border border-[#7b1e1e]/30 p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300"
+                >
+                  <div className="mb-4">
+                    <IconComponent className="text-5xl text-[#7b1e1e]" />
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-bold mb-4 text-[#4a0e0e]">
+                    {initiative.title}
+                  </h3>
+                  <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
+                    {initiative.description}
+                  </p>
+                </motion.div>
+              );
+            })}
           </motion.div>
         </div>
       </section>
 
       {/* Vision Section */}
-      <section className="py-16 sm:py-24 bg-stone-50">
+      <section className="py-16 sm:py-24 bg-[#f8f5f3]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
             <motion.div
@@ -263,20 +226,6 @@ const ClimateActionPage = () => {
                   className="w-full h-full object-cover"
                 />
               </div>
-
-              <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 1,
-                }}
-                className="absolute -top-6 -left-6 bg-white border-2 border-[#7b1e1e] text-[#7b1e1e] p-6 rounded-xl shadow-xl"
-              >
-                <p className="text-4xl font-bold">100+</p>
-                <p className="text-sm">Trees Planted</p>
-              </motion.div>
             </motion.div>
 
             <motion.div
@@ -294,7 +243,7 @@ const ClimateActionPage = () => {
                   transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
                   className="inline-block mb-6 p-4 bg-[#7b1e1e]/10 rounded-full"
                 >
-                  <span className="text-5xl">🌍</span>
+                  <FaGlobeAmericas className="text-5xl text-[#7b1e1e]" />
                 </motion.div>
 
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
