@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { FaBook, FaSeedling, FaUsers, FaChalkboardTeacher, FaHeart, FaLeaf } from "react-icons/fa";
+import { FaBook, FaSeedling, FaUsers, FaChalkboardTeacher, FaHeart, FaLeaf, FaGraduationCap, FaBriefcase, FaIndustry, FaFemale, FaHeartbeat, FaBalanceScale } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 
@@ -134,38 +134,97 @@ const HomePage = () => {
 
       {/* 🎓 CORE PROGRAMS */}
       <section id="programs" className="py-20 bg-[#f8f5f3]">
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <motion.h2
-            className="text-3xl font-bold text-[#7b1e1e] mb-10"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            Our Core Programs
-          </motion.h2>
+  <div className="max-w-7xl mx-auto px-6 text-center">
+    <motion.h2
+      className="text-3xl font-bold text-[#7b1e1e] mb-10"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8 }}
+    >
+      Our Core Programs
+    </motion.h2>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { icon: <FaBook />, title: "Magic Board School", desc: "Education with sustainability." },
-              { icon: <FaSeedling />, title: "Climate Action", desc: "Awareness & community resilience." },
-              { icon: <FaChalkboardTeacher />, title: "Vocational Training", desc: "Empowering with practical skills." },
-              { icon: <FaUsers />, title: "Research & Innovation", desc: "Youth-led sustainable solutions." },
-              { icon: <FaHeart />, title: "Women Empowerment", desc: "Fostering equality & leadership." },
-              { icon: <FaLeaf />, title: "Health & Well-being", desc: "Sustainable community health." },
-            ].map((program, index) => (
-              <motion.div
-                key={index}
-                className="bg-white rounded-xl shadow-md p-8 hover:shadow-xl transition-all duration-300 border border-transparent hover:border-[#7b1e1e]/30"
-                whileHover={{ scale: 1.05 }}
-              >
-                <div className="text-4xl text-[#7b1e1e] mb-4">{program.icon}</div>
-                <h3 className="text-xl font-semibold mb-2">{program.title}</h3>
-                <p className="text-gray-700">{program.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+    {/* Grid with 4 on top, 3 on bottom - centered */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      {[
+        { 
+          icon: <FaGraduationCap />, 
+          title: "Quality Education (SDG 4)", 
+          desc: "Education with sustainability.",
+          href: "/magic"
+        },
+        { 
+          icon: <FaLeaf />, 
+          title: "Climate Action (SDG 13)", 
+          desc: "Awareness & community resilience.",
+          href: "/climate"
+        },
+        { 
+          icon: <FaBriefcase />, 
+          title: "Decent Work & Economic Growth (SDG 8)", 
+          desc: "Empowering with practical skills.",
+          href: "/vocational"
+        },
+        { 
+          icon: <FaIndustry />, 
+          title: "Industry, Innovation & Infrastructure (SDG 9)", 
+          desc: "Youth-led sustainable solutions.",
+          href: "/research"
+        }
+      ].map((program, index) => (
+        <motion.div
+          key={index}
+          className="bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition-all duration-300 border border-transparent hover:border-[#7b1e1e]/30"
+          whileHover={{ scale: 1.05 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: index * 0.1 }}
+        >
+          <div className="text-4xl text-[#7b1e1e] mb-4">{program.icon}</div>
+          <h3 className="text-lg font-semibold mb-2">{program.title}</h3>
+          <p className="text-gray-700 text-sm">{program.desc}</p>
+        </motion.div>
+      ))}
+    </div>
+
+    {/* Second row - 3 items centered */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+      {[
+        { 
+          icon: <FaFemale />, 
+          title: "Gender Equality (SDG 5)", 
+          desc: "Fostering equality & leadership.",
+          href: "/women"
+        },
+        { 
+          icon: <FaHeartbeat />, 
+          title: "Good Health & Well-being (SDG 3)", 
+          desc: "Sustainable community health.",
+          href: "/health"
+        },
+        { 
+          icon: <FaBalanceScale />, 
+          title: "Peace, Justice & Strong Institutions (SDG 16)", 
+          desc: "Building peaceful, cohesive communities.",
+          href: "/volunteer"
+        }
+      ].map((program, index) => (
+        <motion.div
+          key={index + 4}
+          className="bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition-all duration-300 border border-transparent hover:border-[#7b1e1e]/30"
+          whileHover={{ scale: 1.05 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: (index + 4) * 0.1 }}
+        >
+          <div className="text-4xl text-[#7b1e1e] mb-4">{program.icon}</div>
+          <h3 className="text-lg font-semibold mb-2">{program.title}</h3>
+          <p className="text-gray-700 text-sm">{program.desc}</p>
+        </motion.div>
+      ))}
+    </div>
+  </div>
+</section>
 
       {/* 💫 IMPACT SECTION */}
       <section className="py-20 bg-stone-50 text-center">
