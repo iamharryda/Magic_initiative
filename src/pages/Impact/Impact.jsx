@@ -62,29 +62,7 @@ const ImpactPage = () => {
     },
   ];
 
-  const testimonials = [
-    {
-      quote:
-        "Now I can dream of becoming a teacher. Magic Board School gave me hope for a better future.",
-      author: "Raisa",
-      role: "Student, Age 8",
-      image: "https://i.ibb.co/MxSFCsq9/raisa.jpg",
-    },
-    {
-      quote:
-        "This school has changed our community. Our children now have opportunities we never imagined possible.",
-      author: "Parent from Nazirartek",
-      role: "Community Member",
-      image: "https://i.ibb.co/hT3rj9h/parent.jpg",
-    },
-    {
-      quote:
-        "Being part of MAGIC Initiative has shown me the true power of education to transform lives.",
-      author: "Volunteer Teacher",
-      role: "Magic Board School",
-      image: "https://i.ibb.co/609m419t/Abid.png",
-    },
-  ];
+  
 
   const programs = [
     {
@@ -315,57 +293,7 @@ const ImpactPage = () => {
       </section>
 
       {/* Testimonials */}
-      <section className="py-16 sm:py-24 bg-stone-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-12 sm:mb-16"
-          >
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#4a0e0e] mb-4">
-              Stories of <span className="text-[#7b1e1e]">Change</span>
-            </h2>
-            <p className="text-lg sm:text-xl text-gray-700 max-w-3xl mx-auto">
-              Hear directly from those whose lives we've touched.
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.2, duration: 0.6 }}
-                whileHover={{ scale: 1.05 }}
-                className="bg-white border border-[#7b1e1e]/30 p-8 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300"
-              >
-                <div className="mb-6">
-                  <div className="w-20 h-20 rounded-full bg-gray-100 mx-auto mb-4 overflow-hidden border-2 border-[#7b1e1e]/50">
-                    <img
-                      src={testimonial.image}
-                      alt={testimonial.author}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </div>
-                <p className="text-gray-700 italic mb-6 text-center leading-relaxed">
-                  "{testimonial.quote}"
-                </p>
-                <div className="text-center">
-                  <p className="text-[#4a0e0e] font-semibold">
-                    {testimonial.author}
-                  </p>
-                  <p className="text-[#7b1e1e] text-sm">{testimonial.role}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+    
 
       {/* Future Goals */}
       <section className="py-16 sm:py-24 bg-[#f8f5f3]">

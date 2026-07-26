@@ -1,67 +1,114 @@
-import { FaFacebookF, FaInstagram, FaLinkedinIn, FaMapMarkerAlt, FaPhoneAlt, FaEnvelope } from "react-icons/fa";
+import {
+  FaFacebookF,
+  FaInstagram,
+  FaLinkedinIn,
+} from "react-icons/fa";
+import { FiHome, FiMail, FiPhone } from "react-icons/fi";
 
-const Footer = () => {
+const usefulLinks = [
+  { label: "Sponsor a Child",  href: "#" },
+  { label: "General Donation", href: "#" },
+  { label: "Programs",         href: "#" },
+  { label: "News & Updates",   href: "#" },
+  { label: "Contact Us",       href: "#" },
+  { label: "Privacy Policy",   href: "#" },
+];
+
+const contactInfo = [
+  {
+    Icon: FiHome,
+    text: "Ground floor of Khadiza Bhaban, Rumairchora, Cox's Bazar — opposite Cox's Bazar Hashemia Kamil Master's Madrasa.",
+  },
+  { Icon: FiMail,  text: "magic.initiativebd@gmail.com" },
+  { Icon: FiPhone, text: "+880 1643-196126, +880 1878-554154" },
+];
+
+const socials = [
+  { Icon: FaFacebookF,  label: "Facebook",  href: "http://www.facebook.com/MAGICInitiative" },
+  { Icon: FaLinkedinIn, label: "LinkedIn",  href: "http://www.linkedin.com/company/magic-initiative" },
+  { Icon: FaInstagram,  label: "Instagram", href: "http://www.instagram.com/magicinitiative" },
+];
+
+export default function Footer() {
   return (
-    <footer className="bg-[#7b1e1e] text-white py-10 px-6 text-center">
-      {/* Main text */}
-      <p className="font-medium text-base sm:text-lg">
-        © 2025 MAGIC Initiative — Building Climate-Resilient Futures
-      </p>
+    <footer className="w-full">
 
-      {/* Location & Contact */}
-      <div className="mt-5 space-y-3 text-sm sm:text-base text-gray-100 max-w-3xl mx-auto">
-        <p className="flex items-center justify-center gap-2 leading-relaxed">
-          <FaMapMarkerAlt className="text-white/90" />
-          Ground floor of Khadiza Bhaban, Rumairchora, Cox’s Bazar — opposite
-          Cox’s Bazar Hashemia Kamil Master’s Madrasa.
-        </p>
-        <p className="flex items-center justify-center gap-2">
-          <FaPhoneAlt className="text-white/90" />
-          <span>+880 1643-196126,&nbsp;+880 1878-554154</span>
-        </p>
-        <p className="flex items-center justify-center gap-2">
-          <FaEnvelope className="text-white/90" />
-          <a
-            href="mailto:info@magicinitiative.org"
-            className="underline hover:text-gray-200 transition-colors"
-          >
-            info@magicinitiative.org
-          </a>
+      {/* ── Main footer body ── */}
+      <div className="bg-[#fdf5f5] border-t-4 border-[#800000] px-6 py-14 sm:px-10 lg:px-16">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16">
+
+          {/* Col 1 — Brand */}
+          <div className="flex flex-col gap-5">
+            <a href="/" className="inline-block">
+              <img
+                src="/magic_logo.png"
+                alt="MAGIC Initiative"
+                className="h-16 w-auto object-contain"
+              />
+            </a>
+            <p className="text-[#5a1a1a] text-sm leading-relaxed max-w-xs">
+              MAGIC Initiative is a non-profit organization that empowers underprivileged children and communities
+              in Bangladesh through education, innovation, sustainability, and social cohesion.
+            </p>
+          </div>
+
+          {/* Col 2 — Useful Links */}
+          <div className="flex flex-col gap-5">
+            <h3 className="text-[#800000] font-bold text-lg">Useful Links</h3>
+            <div className="w-10 h-0.5 bg-[#800000] -mt-2" />
+            <ul className="flex flex-col gap-2.5 list-none">
+              {usefulLinks.map(({ label, href }) => (
+                <li key={label}>
+                  <a
+                    href={href}
+                    className="text-[#6b1515] text-sm hover:text-[#800000] hover:underline transition-colors duration-200"
+                  >
+                    {label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Col 3 — Get In Touch */}
+          <div className="flex flex-col gap-5">
+            <h3 className="text-[#800000] font-bold text-lg">Get In Touch</h3>
+            <div className="w-10 h-0.5 bg-[#800000] -mt-2" />
+
+            <ul className="flex flex-col gap-4 list-none">
+              {contactInfo.map(({ Icon, text }) => (
+                <li key={text} className="flex items-start gap-3">
+                  <Icon className="text-[#800000] shrink-0 mt-0.5 text-[17px]" aria-hidden="true" />
+                  <span className="text-[#5a1a1a] text-sm leading-relaxed">{text}</span>
+                </li>
+              ))}
+            </ul>
+
+            {/* Social icons */}
+            <div className="flex flex-wrap gap-2.5 pt-1">
+              {socials.map(({ Icon, label, href }) => (
+                <a
+                  key={label}
+                  href={href}
+                  aria-label={label}
+                  className="flex items-center justify-center w-10 h-10 rounded-full border border-[#e8c8c8] bg-white text-[#800000] transition-all duration-200 hover:bg-[#800000] hover:text-white hover:border-[#800000] hover:scale-110 active:scale-95"
+                >
+                  <Icon className="text-[15px]" aria-hidden="true" />
+                </a>
+              ))}
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* ── Copyright bar ── */}
+      <div className="bg-[#800000] px-6 py-4 text-center">
+        <p className="text-[#fde8e8] text-sm">
+          © 2026 — MAGIC Initiative | All Rights Reserved
         </p>
       </div>
 
-      {/* Divider */}
-      <div className="my-6 mx-auto w-24 h-[1px] bg-gray-300/30"></div>
-
-      {/* Social Links */}
-      <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
-        <a
-          href="https://www.facebook.com/share/1G66vFm4nf/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 hover:text-gray-200 transition-colors text-sm sm:text-base"
-        >
-          <FaFacebookF className="text-lg" /> Facebook
-        </a>
-        <a
-          href="https://www.instagram.com/magicinitiative/?utm_source=qr&igsh=MWtpczV0amtrdjEyYg%3D%3D#"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 hover:text-gray-200 transition-colors text-sm sm:text-base"
-        >
-          <FaInstagram className="text-lg" /> Instagram
-        </a>
-        <a
-          href="#"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 hover:text-gray-200 transition-colors text-sm sm:text-base"
-        >
-          <FaLinkedinIn className="text-lg" /> LinkedIn
-        </a>
-      </div>
     </footer>
   );
-};
-
-export default Footer;
+}

@@ -16,6 +16,14 @@ import ResearchInnovationPage from "./pages/Programs/ReseachInnovation.jsx";
 import VocationalTrainingPage from "./pages/Programs/VocationalTraining.jsx";
 import WomenEmpowermentPage from "./pages/Programs/WomenEmpowerment.jsx";
 import ContactPage from "./pages/Contact/Contact.jsx";
+import FAQPage from "./pages/faq/FaqPage.jsx";
+import VolunteerPage from "./pages/get_involved/Volunteerpage.jsx";
+import PartnerPage from "./pages/get_involved/Partnerpage.jsx";
+import PeaceJusticePage from "./pages/Programs/PeaceJusticePage.jsx";
+import EmergencyResponsePage from "./pages/Programs/EmergencyResponsePage.jsx";
+import DonatePage from "./pages/donation/DonatePage.jsx";
+import SponsorChildPage from "./pages/donation/SponsorChildPage.jsx";
+
 
 
 export default function App() {
@@ -36,15 +44,20 @@ export default function App() {
         <Route path="/mission" element={<MissionVisionPage></MissionVisionPage>} />
         <Route path="/values" element={<CoreValuesPage></CoreValuesPage>} />
         <Route path="/impact" element={<ImpactPage></ImpactPage>} />
-        <Route path="/volunteer" element={<ComingSoonPage></ComingSoonPage>} />
-        <Route path="/partner" element={<ComingSoonPage></ComingSoonPage>} />
-        <Route path="/magic" element={<MagicBoardSchool></MagicBoardSchool>} />
-        <Route path="/climate" element={<ClimateActionPage/>} />
-        <Route path="/health" element={<HealthWellbeingPage></HealthWellbeingPage>} />
-        <Route path="/research" element={<ResearchInnovationPage></ResearchInnovationPage>} />
-        <Route path="/vocational" element={<VocationalTrainingPage></VocationalTrainingPage>} />
-        <Route path="/women" element={<WomenEmpowermentPage></WomenEmpowermentPage>} />
+        <Route path="/focus/education" element={<MagicBoardSchool></MagicBoardSchool>} />
+        <Route path="/focus/climate" element={<ClimateActionPage/>} />
+        <Route path="/focus/health" element={<HealthWellbeingPage></HealthWellbeingPage>} />
+        <Route path="/focus/research" element={<ResearchInnovationPage></ResearchInnovationPage>} />
+        <Route path="/focus/youth" element={<VocationalTrainingPage></VocationalTrainingPage>} />
+        <Route path="/focus/women" element={<WomenEmpowermentPage></WomenEmpowermentPage>} />
         <Route path="/contact" element={<ContactPage></ContactPage>} />
+        <Route path="/faq" element={<FAQPage></FAQPage>} />
+        <Route path="/volunteer" element={<VolunteerPage/>} />
+        <Route path="/partner" element={<PartnerPage/>} />
+        <Route path="/focus/peace" element={<PeaceJusticePage></PeaceJusticePage>} />
+        <Route path="/focus/emergency" element={<EmergencyResponsePage></EmergencyResponsePage>} />
+        <Route path="/donate" element={<DonatePage></DonatePage>} />
+        <Route path="/sponsor" element={<SponsorChildPage></SponsorChildPage>} />
 
       </Routes>
       {/* Footer */}

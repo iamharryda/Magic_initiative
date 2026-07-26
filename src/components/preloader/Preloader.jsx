@@ -21,7 +21,7 @@ export default function Preloader({ onFinish }) {
     >
       {/* Logo */}
       <motion.img
-        src="/Magic Initiative Logo PNG.png"
+        src="public/magic_logo.png"
         alt="MAGIC Initiative"
         initial={{ scale: 0 }}
         animate={{ scale: [0, 1.1, 1] }}

@@ -2,12 +2,12 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { 
-  FaSeedling, 
-  FaLightbulb, 
-  FaBook, 
-  FaHandsHelping, 
-  FaCheckCircle, 
+import {
+  FaSeedling,
+  FaLightbulb,
+  FaBook,
+  FaHandsHelping,
+  FaCheckCircle,
   FaBalanceScale,
   FaBullseye,
   FaGlobeAmericas
@@ -156,7 +156,7 @@ const MissionVisionPage = () => {
             >
               <div className="aspect-square rounded-2xl overflow-hidden border-4 border-[#7b1e1e]/30 shadow-lg">
                 <img
-                  src="https://i.ibb.co/BHDcWSz6/children-With-Teacher.jpg"
+                  src="public/childrenWithTeacher.jpg"
                   alt="Students at Magic Board School"
                   className="w-full h-full object-cover"
                 />
@@ -180,7 +180,7 @@ const MissionVisionPage = () => {
             >
               <div className="aspect-square rounded-2xl overflow-hidden border-4 border-[#7b1e1e]/30 shadow-lg">
                 <img
-                  src="https://i.ibb.co/SXFfFk7t/learning.jpg"
+                  src="public/learning.jpg"
                   alt="Climate action and education"
                   className="w-full h-full object-cover"
                 />
