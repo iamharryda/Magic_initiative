@@ -103,10 +103,13 @@ export default function Footer() {
       </div>
 
       {/* ── Copyright bar ── */}
-      <div className="bg-[#800000] px-6 py-4 text-center">
+      <div className="bg-[#800000] px-6 py-4 text-center flex flex-col sm:flex-row items-center justify-center gap-2">
         <p className="text-[#fde8e8] text-sm">
-          © 2026 — MAGIC Initiative | All Rights Reserved
+          © {new Date().getFullYear()} — MAGIC Initiative | All Rights Reserved
         </p>
+        <a href="/admin/login" className="text-[#fde8e8] text-xs opacity-50 hover:opacity-100 hover:underline transition-opacity ml-2">
+          Admin Login
+        </a>
       </div>
 
     </footer>

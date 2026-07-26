@@ -9,24 +9,35 @@ const presets = [10, 20, 50, 100];
 function DonatePage() {
   const [selectedAmount, setSelectedAmount] = useState(null);
   const [customAmount, setCustomAmount] = useState("");
+  const [email, setEmail] = useState("");
 
   const amount = customAmount ? Number(customAmount) : selectedAmount;
-  const validAmount = amount && amount > 0;
+  const validAmount = amount && amount > 0 && email;
 
   const handleDonate = async () => {
     if (!validAmount) return;
 
-    // TODO (Stripe): create a one-time Checkout Session (mode: "payment").
-    //
-    // const res = await fetch("/api/create-checkout-session", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({ amount, currency: "usd" }),
-    // });
-    // const { url } = await res.json();
-    // window.location.href = url;
-
-    console.log("Donate:", { amount });
+    try {
+      const res = await fetch("http://localhost:5006/api/v1/donation/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          amount, 
+          donorEmail: email,
+          successUrl: window.location.origin + "/donate/success?session_id={CHECKOUT_SESSION_ID}",
+          returnUrl: window.location.origin + "/donate/cancel"
+        }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert("Failed to initialize checkout.");
+      }
+    } catch (error) {
+      console.error("Error creating checkout session:", error);
+      alert("Error connecting to the server.");
+    }
   };
 
   return (
@@ -93,6 +104,18 @@ function DonatePage() {
                   }}
                   placeholder="Custom Amount"
                   className="w-full pl-9 pr-5 py-3.5 rounded-full bg-transparent border-2 border-[#7b1e1e]/40 text-[#4a0e0e] placeholder-[#7b1e1e]/50 font-semibold focus:outline-none focus:border-[#7b1e1e] transition-colors"
+                />
+              </div>
+
+              {/* Email Input */}
+              <div className="relative mt-2">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Your Email Address"
+                  required
+                  className="w-full px-5 py-3.5 rounded-full bg-transparent border-2 border-[#7b1e1e]/40 text-[#4a0e0e] placeholder-[#7b1e1e]/50 font-semibold focus:outline-none focus:border-[#7b1e1e] transition-colors"
                 />
               </div>
             </motion.div>

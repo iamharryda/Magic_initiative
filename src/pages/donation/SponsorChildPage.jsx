@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { FiUser, FiGift, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 /* ---------- Config ---------- */
@@ -50,6 +50,11 @@ function SponsorChildPage() {
   const [ageGroup, setAgeGroup] = useState("all");
   const [waiting, setWaiting] = useState([]);
   const [page, setPage] = useState(1);
+  
+  // Modal state
+  const [selectedChild, setSelectedChild] = useState(null);
+  const [emailInput, setEmailInput] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const resetPage = () => setPage(1);
 
@@ -81,22 +86,42 @@ function SponsorChildPage() {
   const current = Math.min(page, totalPages);
   const pageItems = filtered.slice((current - 1) * PER_PAGE, current * PER_PAGE);
 
-  const handleSponsor = async (child) => {
-    // TODO (Stripe): create a subscription Checkout Session for this child.
-    // Use one recurring Price for sponsorship and pass child info as metadata.
-    //
-    // const res = await fetch("/api/create-subscription-session", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({
-    //     priceId: "price_XXXX_sponsorship",
-    //     metadata: { childId: child.id, childName: child.name },
-    //   }),
-    // });
-    // const { url } = await res.json();
-    // window.location.href = url;
+  const handleSponsorClick = (child) => {
+    setSelectedChild(child);
+    setEmailInput("");
+  };
 
-    console.log("Sponsor child:", child);
+  const confirmSponsorship = async (e) => {
+    e.preventDefault();
+    if (!emailInput || !selectedChild) return;
+    
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("http://localhost:5006/api/v1/sponsorship/setup-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sponsorEmail: emailInput,
+          childId: selectedChild.id,
+          childName: selectedChild.name,
+          amount: MONTHLY,
+          interval: 'month',
+          successUrl: window.location.origin + "/sponsorship/success?session_id={CHECKOUT_SESSION_ID}",
+          returnUrl: window.location.origin + "/sponsorship/cancel"
+        }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert("Failed to initialize sponsorship checkout.");
+        setIsSubmitting(false);
+      }
+    } catch (error) {
+      console.error("Error creating sponsorship session:", error);
+      alert("Error connecting to the server.");
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -262,7 +287,7 @@ function SponsorChildPage() {
                       </p>
 
                       <motion.button
-                        onClick={() => handleSponsor(c)}
+                        onClick={() => handleSponsorClick(c)}
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
                         className="mt-auto w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-[#7b1e1e] hover:bg-[#611515] text-white text-sm font-semibold transition-colors"
@@ -310,6 +335,89 @@ function SponsorChildPage() {
           </div>
         </div>
       </section>
+
+      {/* ---------- Modal ---------- */}
+      <AnimatePresence>
+        {selectedChild && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => !isSubmitting && setSelectedChild(null)}
+              className="absolute inset-0 bg-[#4a0e0e]/40 backdrop-blur-sm"
+            />
+
+            {/* Modal Content */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+            >
+              <div className="bg-[#4a0e0e] p-6 text-center text-white">
+                <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <FiGift className="text-3xl text-white" />
+                </div>
+                <h2 className="text-2xl font-bold">Sponsor {selectedChild.name}</h2>
+                <p className="text-white/80 text-sm mt-2">
+                  You are making a life-changing commitment.
+                </p>
+              </div>
+
+              <div className="p-6">
+                <div className="flex justify-between items-center bg-[#fdf5f5] border border-[#7b1e1e]/20 p-4 rounded-lg mb-6">
+                  <span className="text-gray-600 font-semibold text-sm">Monthly Gift</span>
+                  <span className="text-[#7b1e1e] font-bold text-xl">{CURRENCY}{MONTHLY.toFixed(2)}</span>
+                </div>
+
+                <form onSubmit={confirmSponsorship}>
+                  <div className="mb-6">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Your Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={emailInput}
+                      onChange={(e) => setEmailInput(e.target.value)}
+                      placeholder="Enter your email"
+                      required
+                      disabled={isSubmitting}
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-[#7b1e1e] focus:ring-2 focus:ring-[#7b1e1e]/20 transition-all disabled:opacity-50"
+                    />
+                  </div>
+
+                  <div className="flex gap-3 mt-8">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedChild(null)}
+                      disabled={isSubmitting}
+                      className="flex-1 py-3 px-4 rounded-lg font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors disabled:opacity-50"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="flex-1 py-3 px-4 rounded-lg font-bold text-white bg-[#7b1e1e] hover:bg-[#611515] transition-colors shadow-lg shadow-[#7b1e1e]/30 disabled:opacity-50 flex justify-center items-center gap-2"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          Processing...
+                        </>
+                      ) : (
+                        "Proceed to Checkout"
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

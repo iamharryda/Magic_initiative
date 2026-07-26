@@ -1,4 +1,4 @@
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link, useLocation } from "react-router-dom";
 import Header2 from "./pages/Navigation/Navigation.jsx";
 import HomePage from "./pages/Home/Home.jsx";
 import TeamPage from "./pages/About/Team.jsx";
@@ -23,11 +23,17 @@ import PeaceJusticePage from "./pages/Programs/PeaceJusticePage.jsx";
 import EmergencyResponsePage from "./pages/Programs/EmergencyResponsePage.jsx";
 import DonatePage from "./pages/donation/DonatePage.jsx";
 import SponsorChildPage from "./pages/donation/SponsorChildPage.jsx";
+import PaymentResult from "./pages/donation/PaymentResult.jsx";
+import AdminLogin from "./pages/admin/AdminLogin.jsx";
+import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 
 
 
 export default function App() {
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
   return (
     <>
       {loading ? (
@@ -35,7 +41,7 @@ export default function App() {
       ) : (
         <div className="font-sans">
       {/* Navbar */}
-      <Header2 />
+      {!isAdminRoute && <Header2 />}
 
       {/* Routes */}
       <Routes>
@@ -58,10 +64,15 @@ export default function App() {
         <Route path="/focus/emergency" element={<EmergencyResponsePage></EmergencyResponsePage>} />
         <Route path="/donate" element={<DonatePage></DonatePage>} />
         <Route path="/sponsor" element={<SponsorChildPage></SponsorChildPage>} />
-
+        <Route path="/donate/success" element={<PaymentResult />} />
+        <Route path="/donate/cancel" element={<PaymentResult />} />
+        <Route path="/sponsorship/success" element={<PaymentResult />} />
+        <Route path="/sponsorship/cancel" element={<PaymentResult />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
       </Routes>
       {/* Footer */}
-      <Footer></Footer>
+      {!isAdminRoute && <Footer />}
     </div>
       )
     }
