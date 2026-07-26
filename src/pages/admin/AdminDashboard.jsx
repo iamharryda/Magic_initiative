@@ -21,9 +21,10 @@ export default function AdminDashboard() {
   const fetchData = async () => {
     setLoading(true);
     try {
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5006";
       const endpoint = activeTab === "donations" 
-        ? `http://localhost:5006/api/v1/donation?page=${page}&limit=10`
-        : `http://localhost:5006/api/v1/sponsorship?page=${page}&limit=10`;
+        ? `${API_URL}/api/v1/donation?page=${page}&limit=10`
+        : `${API_URL}/api/v1/sponsorship?page=${page}&limit=10`;
       
       const token = localStorage.getItem("magic_admin_auth");
       const res = await fetch(endpoint, {

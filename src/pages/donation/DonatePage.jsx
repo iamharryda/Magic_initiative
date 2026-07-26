@@ -18,7 +18,8 @@ function DonatePage() {
     if (!validAmount) return;
 
     try {
-      const res = await fetch("http://localhost:5006/api/v1/donation/checkout", {
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5006";
+      const res = await fetch(`${API_URL}/api/v1/donation/checkout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 

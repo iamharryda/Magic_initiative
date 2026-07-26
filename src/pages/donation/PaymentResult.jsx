@@ -26,9 +26,10 @@ function PaymentResult() {
       }
 
       try {
+        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5006";
         const endpoint = isDonation 
-          ? `http://localhost:5006/api/v1/donation/confirm?session_id=${sessionId}`
-          : `http://localhost:5006/api/v1/sponsorship/confirm-setup?session_id=${sessionId}`;
+          ? `${API_URL}/api/v1/donation/confirm?session_id=${sessionId}`
+          : `${API_URL}/api/v1/sponsorship/confirm-setup?session_id=${sessionId}`;
           
         const res = await fetch(endpoint, {
           method: "GET",

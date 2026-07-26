@@ -97,7 +97,8 @@ function SponsorChildPage() {
     
     setIsSubmitting(true);
     try {
-      const res = await fetch("http://localhost:5006/api/v1/sponsorship/setup-session", {
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5006";
+      const res = await fetch(`${API_URL}/api/v1/sponsorship/setup-session`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
