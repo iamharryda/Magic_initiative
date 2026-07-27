@@ -9,14 +9,27 @@ import {
   FaTrash,
   FaEye,
   FaSearch,
-  FaFilter,
   FaTimes,
   FaSignOutAlt,
   FaSpinner,
   FaCalendarAlt,
   FaTag,
-  FaCheck
+  FaCheck,
+  FaEnvelope,
+  FaBriefcase,
+  FaNewspaper,
+  FaBookOpen,
+  FaCalendarCheck,
+  FaFileAlt,
+  FaBook,
+  FaHandshake,
+  FaAward,
+  FaUserCheck,
+  FaExternalLinkAlt,
+  FaDownload
 } from "react-icons/fa";
+
+import ImageUploadInput from "../../components/upload/ImageUploadInput.jsx";
 
 const TAG_OPTIONS = [
   'education',
@@ -29,8 +42,6 @@ const TAG_OPTIONS = [
   'peace',
 ];
 
-const STATUS_OPTIONS = ['ongoing', 'completed'];
-
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("donations");
@@ -39,24 +50,19 @@ export default function AdminDashboard() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  // Projects specific filters & search
-  const [statusFilter, setStatusFilter] = useState("");
-  const [tagFilter, setTagFilter] = useState("");
+  // Search & Filter
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [subTab, setSubTab] = useState("postings"); // for career: 'postings' | 'applications'
 
   // Modals state
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [editingProject, setEditingProject] = useState(null);
-  const [viewingProject, setViewingProject] = useState(null);
-  const [deletingProject, setDeletingProject] = useState(null);
+  const [editingItem, setEditingItem] = useState(null);
+  const [viewingItem, setViewingItem] = useState(null);
+  const [deletingItem, setDeletingItem] = useState(null);
 
-  const [formData, setFormData] = useState({
-    title: "",
-    body: "",
-    status: "ongoing",
-    tags: [],
-    publishedDate: new Date().toISOString().substring(0, 16)
-  });
+  // General Form state for create/edit
+  const [formData, setFormData] = useState({});
 
   const [actionLoading, setActionLoading] = useState(false);
   const [alertMsg, setAlertMsg] = useState({ type: "", message: "" });
@@ -68,34 +74,56 @@ export default function AdminDashboard() {
       return;
     }
     fetchData();
-  }, [activeTab, page, statusFilter, tagFilter]);
+  }, [activeTab, page, statusFilter, subTab]);
+
+  const getEndpoint = () => {
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5006";
+    const query = new URLSearchParams({ page: page.toString(), limit: "10" });
+    if (statusFilter) query.append("status", statusFilter);
+    if (searchTerm) query.append("search", searchTerm);
+
+    switch (activeTab) {
+      case "donations":
+        return `${API_URL}/api/v1/donation?${query.toString()}`;
+      case "sponsorships":
+        return `${API_URL}/api/v1/sponsorship?${query.toString()}`;
+      case "projects":
+        return `${API_URL}/api/v1/project?${query.toString()}`;
+      case "contact":
+        return `${API_URL}/api/v1/contact?${query.toString()}`;
+      case "career":
+        if (subTab === "applications") {
+          return `${API_URL}/api/v1/career/applications?${query.toString()}`;
+        }
+        return `${API_URL}/api/v1/career?${query.toString()}`;
+      case "news":
+        return `${API_URL}/api/v1/news?${query.toString()}`;
+      case "blogs":
+        return `${API_URL}/api/v1/blog?${query.toString()}`;
+      case "events":
+        return `${API_URL}/api/v1/event?${query.toString()}`;
+      case "reports":
+        return `${API_URL}/api/v1/report?${query.toString()}`;
+      case "yearbooks":
+        return `${API_URL}/api/v1/yearbook?${query.toString()}`;
+      case "volunteer":
+        return `${API_URL}/api/v1/volunteer?${query.toString()}`;
+      case "partner":
+        return `${API_URL}/api/v1/partner?${query.toString()}`;
+      case "awards":
+        return `${API_URL}/api/v1/award?${query.toString()}`;
+      default:
+        return `${API_URL}/api/v1/project?${query.toString()}`;
+    }
+  };
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5006";
-      let endpoint = "";
-
-      if (activeTab === "donations") {
-        endpoint = `${API_URL}/api/v1/donation?page=${page}&limit=10`;
-      } else if (activeTab === "sponsorships") {
-        endpoint = `${API_URL}/api/v1/sponsorship?page=${page}&limit=10`;
-      } else if (activeTab === "projects") {
-        const query = new URLSearchParams({
-          page: page.toString(),
-          limit: "10"
-        });
-        if (statusFilter) query.append("status", statusFilter);
-        if (tagFilter) query.append("tag", tagFilter);
-        if (searchTerm) query.append("search", searchTerm);
-        endpoint = `${API_URL}/api/v1/project?${query.toString()}`;
-      }
-
+      const endpoint = getEndpoint();
       const token = localStorage.getItem("magic_admin_auth");
       const res = await fetch(endpoint, {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
+        headers: { "Authorization": `Bearer ${token}` }
       });
 
       if (res.status === 401 || res.status === 403) {
@@ -106,16 +134,18 @@ export default function AdminDashboard() {
       const result = await res.json();
 
       if (activeTab === "donations") {
-        setData(result.donations || []);
-        setTotalPages(result.totalPages || 1);
+        const list = result.donations || result.data?.data || (Array.isArray(result.data) ? result.data : []);
+        setData(list);
+        setTotalPages(result.totalPages || result.data?.meta?.totalPages || 1);
       } else if (activeTab === "sponsorships") {
-        setData(result.sponsorships || []);
-        setTotalPages(result.totalPages || 1);
-      } else if (activeTab === "projects") {
-        const projectList = result.data?.data || (Array.isArray(result.data) ? result.data : []);
-        const pages = result.data?.meta?.totalPages || result.totalPages || 1;
-        setData(projectList);
-        setTotalPages(pages);
+        const list = result.sponsorships || result.data?.data || (Array.isArray(result.data) ? result.data : []);
+        setData(list);
+        setTotalPages(result.totalPages || result.data?.meta?.totalPages || 1);
+      } else {
+        const list = result.data?.data || (Array.isArray(result.data) ? result.data : result.items || result.careers || result.applications || result.news || result.blogs || result.events || result.reports || result.yearbooks || result.volunteers || result.partners || result.awards || result.contacts || []);
+        const total = result.data?.meta?.totalPages || result.totalPages || 1;
+        setData(list);
+        setTotalPages(total);
       }
     } catch (error) {
       console.error("Error fetching data", error);
@@ -135,85 +165,107 @@ export default function AdminDashboard() {
     navigate("/admin/login");
   };
 
-  const handleTagToggle = (tag) => {
-    setFormData(prev => {
-      const exists = prev.tags.includes(tag);
-      if (exists) {
-        return { ...prev, tags: prev.tags.filter(t => t !== tag) };
-      } else {
-        return { ...prev, tags: [...prev.tags, tag] };
-      }
-    });
-  };
-
+  // Open Create Modal with entity default schema
   const openCreateModal = () => {
-    setFormData({
-      title: "",
-      body: "",
-      status: "ongoing",
-      tags: [],
-      publishedDate: new Date().toISOString().substring(0, 16)
-    });
+    let initial = {};
+    switch (activeTab) {
+      case "projects":
+        initial = { title: "", body: "", coverPhoto: "", status: "ongoing", tags: [], publishedDate: new Date().toISOString().substring(0, 16) };
+        break;
+      case "career":
+        initial = { title: "", department: "", location: "Remote", jobType: "full-time", experienceLevel: "", salaryRange: "", description: "", requirements: "", responsibilities: "", status: "open" };
+        break;
+      case "news":
+        initial = { title: "", picture: "", link: "", description: "", publishedDate: new Date().toISOString().substring(0, 10) };
+        break;
+      case "blogs":
+        initial = { title: "", body: "", coverPhoto: "", author: "Admin", tags: [], status: "published" };
+        break;
+      case "events":
+        initial = { title: "", body: "", coverPhoto: "", eventDate: new Date().toISOString().substring(0, 16), location: "", registrationLink: "", status: "upcoming" };
+        break;
+      case "reports":
+        initial = { title: "", coverPhoto: "", fileUrl: "", description: "" };
+        break;
+      case "yearbooks":
+        initial = { title: "", coverPhoto: "", pdfUrl: "", year: new Date().getFullYear().toString(), description: "" };
+        break;
+      case "volunteer":
+        initial = { companyName: "", email: "", phone: "", logo: "", description: "", website: "", status: "working" };
+        break;
+      case "partner":
+        initial = { companyName: "", email: "", phone: "", logo: "", description: "", website: "", status: "active_partner" };
+        break;
+      case "awards":
+        initial = { title: "", description: "", coverPhoto: "", year: new Date().getFullYear().toString(), issuer: "" };
+        break;
+      default:
+        break;
+    }
+    setFormData(initial);
     setIsCreateOpen(true);
   };
 
-  const openEditModal = (project) => {
-    setEditingProject(project);
-    setFormData({
-      title: project.title || "",
-      body: project.body || "",
-      status: project.status || "ongoing",
-      tags: project.tags || [],
-      publishedDate: project.publishedDate
-        ? new Date(project.publishedDate).toISOString().substring(0, 16)
-        : new Date().toISOString().substring(0, 16)
-    });
+  const openEditModal = (item) => {
+    setEditingItem(item);
+    let initial = { ...item };
+    if (activeTab === "career") {
+      initial.requirements = Array.isArray(item.requirements) ? item.requirements.join(", ") : (item.requirements || "");
+      initial.responsibilities = Array.isArray(item.responsibilities) ? item.responsibilities.join(", ") : (item.responsibilities || "");
+    }
+    if (activeTab === "blogs" || activeTab === "projects") {
+      initial.tags = item.tags || [];
+    }
+    if (activeTab === "events" && item.eventDate) {
+      initial.eventDate = new Date(item.eventDate).toISOString().substring(0, 16);
+    }
+    setFormData(initial);
   };
 
-  const openViewModal = async (project) => {
-    try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5006";
-      const res = await fetch(`${API_URL}/api/v1/project/${project._id}`);
-      const result = await res.json();
-      if (result.status && result.data) {
-        setViewingProject(result.data);
-      } else {
-        setViewingProject(project);
-      }
-    } catch (err) {
-      setViewingProject(project);
+  const getEntityApiBase = () => {
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5006";
+    if (activeTab === "career" && subTab === "applications") {
+      return `${API_URL}/api/v1/career/applications`;
     }
+    return `${API_URL}/api/v1/${activeTab}`;
   };
 
   const handleCreateSubmit = async (e) => {
     e.preventDefault();
     setActionLoading(true);
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5006";
       const token = localStorage.getItem("magic_admin_auth");
-      const res = await fetch(`${API_URL}/api/v1/project`, {
+      let payload = { ...formData };
+
+      if (activeTab === "career") {
+        if (typeof payload.requirements === "string") {
+          payload.requirements = payload.requirements.split(",").map(s => s.trim()).filter(Boolean);
+        }
+        if (typeof payload.responsibilities === "string") {
+          payload.responsibilities = payload.responsibilities.split(",").map(s => s.trim()).filter(Boolean);
+        }
+      }
+
+      const res = await fetch(getEntityApiBase(), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify({
-          ...formData,
-          publishedDate: new Date(formData.publishedDate).toISOString()
-        })
+        body: JSON.stringify(payload)
       });
       const result = await res.json();
 
       if (res.ok && (result.status || result.data)) {
-        setAlertMsg({ type: "success", message: "Project created successfully!" });
+        setAlertMsg({ type: "success", message: "Created successfully!" });
         setIsCreateOpen(false);
         fetchData();
       } else {
-        setAlertMsg({ type: "error", message: result.message || "Failed to create project" });
+        setAlertMsg({ type: "error", message: result.message || "Failed to create item" });
       }
     } catch (err) {
       console.error(err);
-      setAlertMsg({ type: "error", message: "Network error creating project" });
+      setAlertMsg({ type: "error", message: "Network error creating item" });
     } finally {
       setActionLoading(false);
       setTimeout(() => setAlertMsg({ type: "", message: "" }), 4000);
@@ -222,83 +274,147 @@ export default function AdminDashboard() {
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
-    if (!editingProject) return;
+    if (!editingItem) return;
     setActionLoading(true);
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5006";
       const token = localStorage.getItem("magic_admin_auth");
-      const res = await fetch(`${API_URL}/api/v1/project/${editingProject._id}`, {
+      let payload = { ...formData };
+
+      if (activeTab === "career") {
+        if (typeof payload.requirements === "string") {
+          payload.requirements = payload.requirements.split(",").map(s => s.trim()).filter(Boolean);
+        }
+        if (typeof payload.responsibilities === "string") {
+          payload.responsibilities = payload.responsibilities.split(",").map(s => s.trim()).filter(Boolean);
+        }
+      }
+
+      const res = await fetch(`${getEntityApiBase()}/${editingItem._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify({
-          ...formData,
-          publishedDate: new Date(formData.publishedDate).toISOString()
-        })
+        body: JSON.stringify(payload)
       });
       const result = await res.json();
 
       if (res.ok && (result.status || result.data)) {
-        setAlertMsg({ type: "success", message: "Project updated successfully!" });
-        setEditingProject(null);
+        setAlertMsg({ type: "success", message: "Updated successfully!" });
+        setEditingItem(null);
         fetchData();
       } else {
-        setAlertMsg({ type: "error", message: result.message || "Failed to update project" });
+        setAlertMsg({ type: "error", message: result.message || "Failed to update item" });
       }
     } catch (err) {
       console.error(err);
-      setAlertMsg({ type: "error", message: "Network error updating project" });
+      setAlertMsg({ type: "error", message: "Network error updating item" });
     } finally {
       setActionLoading(false);
       setTimeout(() => setAlertMsg({ type: "", message: "" }), 4000);
     }
   };
 
-  const handleDelete = async () => {
-    if (!deletingProject) return;
+  const handleDeleteSubmit = async () => {
+    if (!deletingItem) return;
     setActionLoading(true);
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5006";
       const token = localStorage.getItem("magic_admin_auth");
-      const res = await fetch(`${API_URL}/api/v1/project/${deletingProject._id}`, {
+      const res = await fetch(`${getEntityApiBase()}/${deletingItem._id}`, {
         method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
+        headers: { "Authorization": `Bearer ${token}` }
       });
       const result = await res.json();
 
-      if (res.ok && result.status) {
-        setAlertMsg({ type: "success", message: "Project deleted successfully!" });
-        setDeletingProject(null);
+      if (res.ok && (result.status || result.data)) {
+        setAlertMsg({ type: "success", message: "Deleted successfully!" });
+        setDeletingItem(null);
         fetchData();
       } else {
-        setAlertMsg({ type: "error", message: result.message || "Failed to delete project" });
+        setAlertMsg({ type: "error", message: result.message || "Failed to delete item" });
       }
     } catch (err) {
       console.error(err);
-      setAlertMsg({ type: "error", message: "Network error deleting project" });
+      setAlertMsg({ type: "error", message: "Network error deleting item" });
     } finally {
       setActionLoading(false);
       setTimeout(() => setAlertMsg({ type: "", message: "" }), 4000);
     }
   };
 
+  const tabsConfig = [
+    { id: "donations", label: "Donations", icon: FaHandHoldingHeart },
+    { id: "sponsorships", label: "Sponsorships", icon: FaUsers },
+    { id: "projects", label: "Projects", icon: FaFolderOpen, hasCrud: true },
+    { id: "contact", label: "Contact", icon: FaEnvelope },
+    { id: "career", label: "Career & Apps", icon: FaBriefcase, hasCrud: true },
+    { id: "news", label: "News", icon: FaNewspaper, hasCrud: true },
+    { id: "blogs", label: "Blogs", icon: FaBookOpen, hasCrud: true },
+    { id: "events", label: "Events", icon: FaCalendarCheck, hasCrud: true },
+    { id: "reports", label: "Reports", icon: FaFileAlt, hasCrud: true },
+    { id: "yearbooks", label: "Yearbooks", icon: FaBook, hasCrud: true },
+    { id: "volunteer", label: "Volunteer", icon: FaUserCheck, hasCrud: true },
+    { id: "partner", label: "Partner", icon: FaHandshake, hasCrud: true },
+    { id: "awards", label: "Awards", icon: FaAward, hasCrud: true },
+  ];
+
+  const currentTabObj = tabsConfig.find(t => t.id === activeTab);
+
+  // Helper to render form inputs based on key
+  const renderFormField = (key) => {
+    const isImageKey = ["coverPhoto", "picture", "logo"].includes(key);
+
+    if (isImageKey) {
+      return (
+        <ImageUploadInput
+          key={key}
+          label={key.replace(/([A-Z])/g, ' $1')}
+          value={formData[key] || ""}
+          onChange={(uploadedUrl) => setFormData({ ...formData, [key]: uploadedUrl })}
+          placeholder={`Upload ${key.replace(/([A-Z])/g, ' $1').toLowerCase()}`}
+        />
+      );
+    }
+
+    if (key === "tags") return null;
+
+    return (
+      <div key={key}>
+        <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
+          {key.replace(/([A-Z])/g, ' $1')}
+        </label>
+        {key === "body" || key === "description" ? (
+          <textarea
+            rows={4}
+            value={formData[key] || ""}
+            onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+            className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:outline-none focus:border-[#7b1e1e]"
+          />
+        ) : (
+          <input
+            type={key.includes("Date") ? "datetime-local" : "text"}
+            value={formData[key] || ""}
+            onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+            className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:outline-none focus:border-[#7b1e1e]"
+          />
+        )}
+      </div>
+    );
+  };
+
   return (
-    <div className="min-h-screen bg-[#f8f5f3] pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#f8f5f3] pt-24 pb-12 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-7xl mx-auto">
 
         {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 bg-gradient-to-br from-[#7b1e1e] to-[#4a0e0e] rounded-3xl p-7 sm:p-8 shadow-xl shadow-[#7b1e1e]/20">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 bg-gradient-to-br from-[#7b1e1e] to-[#4a0e0e] rounded-3xl p-7 sm:p-8 shadow-xl">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Admin Dashboard</h1>
-            <p className="text-white/70 text-sm mt-1">Manage donations, sponsorships, and organization projects</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">MAGIC Admin Control Center</h1>
+            <p className="text-white/70 text-sm mt-1">Manage public entities, candidate applications, publications, and organization content.</p>
           </div>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2 px-5 py-2.5 bg-white/10 text-white hover:bg-white/20 font-semibold rounded-full border border-white/20 backdrop-blur-sm transition"
+            className="flex items-center gap-2 px-5 py-2.5 bg-white/10 text-white hover:bg-white/20 font-semibold rounded-full border border-white/20 backdrop-blur-sm transition cursor-pointer"
           >
             <FaSignOutAlt />
             Logout
@@ -315,615 +431,383 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* Tabs Header */}
-        <div className="inline-flex flex-wrap gap-1.5 p-1.5 mb-6 bg-white rounded-2xl border border-[#7b1e1e]/10 shadow-sm">
-          <button
-            onClick={() => { setActiveTab("donations"); setPage(1); }}
-            className={`flex items-center gap-2 px-5 sm:px-6 py-2.5 rounded-xl font-bold text-sm transition-colors ${
-              activeTab === "donations"
-                ? "bg-gradient-to-br from-[#7b1e1e] to-[#4a0e0e] text-white shadow"
-                : "text-gray-500 hover:text-[#7b1e1e]"
-            }`}
-          >
-            <FaHandHoldingHeart />
-            One-Time Donations
-          </button>
-          <button
-            onClick={() => { setActiveTab("sponsorships"); setPage(1); }}
-            className={`flex items-center gap-2 px-5 sm:px-6 py-2.5 rounded-xl font-bold text-sm transition-colors ${
-              activeTab === "sponsorships"
-                ? "bg-gradient-to-br from-[#7b1e1e] to-[#4a0e0e] text-white shadow"
-                : "text-gray-500 hover:text-[#7b1e1e]"
-            }`}
-          >
-            <FaUsers />
-            Monthly Sponsorships
-          </button>
-          <button
-            onClick={() => { setActiveTab("projects"); setPage(1); }}
-            className={`flex items-center gap-2 px-5 sm:px-6 py-2.5 rounded-xl font-bold text-sm transition-colors ${
-              activeTab === "projects"
-                ? "bg-gradient-to-br from-[#7b1e1e] to-[#4a0e0e] text-white shadow"
-                : "text-gray-500 hover:text-[#7b1e1e]"
-            }`}
-          >
-            <FaFolderOpen />
-            Projects
-          </button>
+        {/* Tabs Bar */}
+        <div className="flex items-center gap-2 overflow-x-auto p-2 mb-6 bg-white rounded-2xl border border-[#7b1e1e]/10 shadow-sm scrollbar-none">
+          {tabsConfig.map((t) => {
+            const Icon = t.icon;
+            return (
+              <button
+                key={t.id}
+                onClick={() => { setActiveTab(t.id); setPage(1); setStatusFilter(""); setSearchTerm(""); }}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm whitespace-nowrap transition-colors cursor-pointer ${
+                  activeTab === t.id
+                    ? "bg-gradient-to-br from-[#7b1e1e] to-[#4a0e0e] text-white shadow-sm"
+                    : "text-stone-600 hover:text-[#7b1e1e] hover:bg-stone-50"
+                }`}
+              >
+                <Icon />
+                {t.label}
+              </button>
+            );
+          })}
         </div>
 
-        {/* Projects Filter & Search Toolbar */}
-        {activeTab === "projects" && (
-          <div className="bg-white p-4 rounded-2xl shadow-sm border border-[#7b1e1e]/10 mb-6 flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4">
-            {/* Search Form */}
-            <form onSubmit={handleSearchSubmit} className="flex items-center gap-2 flex-1">
-              <div className="relative flex-1">
-                <input
-                  type="text"
-                  placeholder="Search project title or body..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 border border-stone-300 rounded-xl text-sm focus:outline-none focus:border-[#7b1e1e] focus:ring-2 focus:ring-[#7b1e1e]/15 transition"
-                />
-                <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
-              </div>
+        {/* Toolbar: Sub-tabs, Filters & Action Buttons */}
+        <div className="bg-white p-4 rounded-2xl shadow-sm border border-[#7b1e1e]/10 mb-6 flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4">
+          
+          {/* Sub-tab for Career */}
+          {activeTab === "career" && (
+            <div className="flex items-center gap-2 bg-stone-100 p-1 rounded-xl">
               <button
-                type="submit"
-                className="px-5 py-2.5 bg-[#4a0e0e] text-white text-sm font-semibold rounded-xl hover:bg-[#310909] transition"
+                onClick={() => { setSubTab("postings"); setPage(1); }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${subTab === "postings" ? "bg-[#7b1e1e] text-white" : "text-stone-600"}`}
               >
-                Search
+                Job Openings
               </button>
-            </form>
-
-            {/* Filters & Actions */}
-            <div className="flex flex-wrap items-center gap-3">
-              {/* Status Filter */}
-              <div className="flex items-center gap-1.5">
-                <FaFilter className="text-[#7b1e1e]/50 text-xs" />
-                <select
-                  value={statusFilter}
-                  onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-                  className="px-3 py-2.5 border border-stone-300 rounded-xl text-sm focus:outline-none focus:border-[#7b1e1e] bg-white"
-                >
-                  <option value="">All Statuses</option>
-                  <option value="ongoing">Ongoing</option>
-                  <option value="completed">Completed</option>
-                </select>
-              </div>
-
-              {/* Tag Filter */}
-              <div className="flex items-center gap-1.5">
-                <FaTag className="text-[#7b1e1e]/50 text-xs" />
-                <select
-                  value={tagFilter}
-                  onChange={(e) => { setTagFilter(e.target.value); setPage(1); }}
-                  className="px-3 py-2.5 border border-stone-300 rounded-xl text-sm focus:outline-none focus:border-[#7b1e1e] bg-white"
-                >
-                  <option value="">All Tags</option>
-                  {TAG_OPTIONS.map(tag => (
-                    <option key={tag} value={tag}>{tag.toUpperCase()}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Clear Filters */}
-              {(statusFilter || tagFilter || searchTerm) && (
-                <button
-                  onClick={() => { setStatusFilter(""); setTagFilter(""); setSearchTerm(""); setPage(1); }}
-                  className="px-3 py-2 text-xs font-semibold text-gray-500 hover:text-red-600 transition"
-                >
-                  Clear Filters
-                </button>
-              )}
-
-              {/* Create Project Button */}
               <button
-                onClick={openCreateModal}
-                className="flex items-center gap-2 px-5 py-2.5 bg-[#7b1e1e] hover:bg-[#611515] text-white text-sm font-bold rounded-xl transition shadow-md shadow-[#7b1e1e]/20"
+                onClick={() => { setSubTab("applications"); setPage(1); }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${subTab === "applications" ? "bg-[#7b1e1e] text-white" : "text-stone-600"}`}
               >
-                <FaPlus />
-                Create Project
+                Candidate Applications
               </button>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Data Table Container */}
-        <div className="bg-white shadow-sm border border-[#7b1e1e]/10 overflow-hidden rounded-2xl">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-[#7b1e1e]/5 text-[#7b1e1e] uppercase text-xs font-bold border-b border-[#7b1e1e]/10">
-                  {activeTab === "donations" ? (
-                    <>
-                      <th className="p-4">Date</th>
-                      <th className="p-4">Donor</th>
-                      <th className="p-4">Amount</th>
-                      <th className="p-4">Status</th>
-                      <th className="p-4">Message</th>
-                    </>
-                  ) : activeTab === "sponsorships" ? (
-                    <>
-                      <th className="p-4">Created</th>
-                      <th className="p-4">Sponsor</th>
-                      <th className="p-4">Child Details</th>
-                      <th className="p-4">Amount/mo</th>
-                      <th className="p-4">Status</th>
-                      <th className="p-4">Next Billing</th>
-                    </>
-                  ) : (
-                    <>
-                      <th className="p-4">Title & Description</th>
-                      <th className="p-4">Status</th>
-                      <th className="p-4">Tags</th>
-                      <th className="p-4">Published Date</th>
-                      <th className="p-4 text-right">Actions</th>
-                    </>
-                  )}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-stone-100">
-                {loading ? (
-                  <tr>
-                    <td colSpan="6" className="p-10 text-center text-gray-500 font-semibold">
-                      <div className="flex items-center justify-center gap-2">
-                        <FaSpinner className="animate-spin text-xl text-[#7b1e1e]" />
-                        Loading data...
-                      </div>
-                    </td>
+          {/* Search Form */}
+          <form onSubmit={handleSearchSubmit} className="flex items-center gap-2 flex-1 max-w-md">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                placeholder={`Search ${currentTabObj?.label || 'items'}...`}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-9 pr-4 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-[#7b1e1e]"
+              />
+              <FaSearch className="absolute left-3 top-3 text-stone-400 text-xs" />
+            </div>
+            <button type="submit" className="px-4 py-2 bg-[#7b1e1e] text-white text-xs font-bold rounded-xl hover:bg-[#5a0000] transition">
+              Search
+            </button>
+          </form>
+
+          {/* Create Button */}
+          {currentTabObj?.hasCrud && !(activeTab === "career" && subTab === "applications") && (
+            <button
+              onClick={openCreateModal}
+              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-[#7b1e1e] hover:bg-[#5a0000] text-white font-bold text-xs rounded-xl shadow transition cursor-pointer"
+            >
+              <FaPlus /> Add New {activeTab.slice(0, -1)}
+            </button>
+          )}
+        </div>
+
+        {/* Data Table */}
+        <div className="bg-white rounded-2xl shadow-sm border border-[#7b1e1e]/10 overflow-hidden">
+          {loading ? (
+            <div className="flex justify-center items-center py-20 text-[#7b1e1e]">
+              <FaSpinner className="animate-spin text-3xl" />
+            </div>
+          ) : data.length === 0 ? (
+            <div className="p-12 text-center text-stone-500">
+              <p className="text-sm font-semibold">No records found for {activeTab}.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-[#f9efef] text-[#7b1e1e] text-xs font-bold uppercase tracking-wider border-b border-stone-200">
+                    {activeTab === "donations" && (
+                      <>
+                        <th className="py-4 px-6">Donor Name</th>
+                        <th className="py-4 px-6">Email</th>
+                        <th className="py-4 px-6">Amount</th>
+                        <th className="py-4 px-6">Status</th>
+                        <th className="py-4 px-6">Payment / Intent ID</th>
+                        <th className="py-4 px-6">Date</th>
+                      </>
+                    )}
+                    {activeTab === "sponsorships" && (
+                      <>
+                        <th className="py-4 px-6">Sponsor Name</th>
+                        <th className="py-4 px-6">Email</th>
+                        <th className="py-4 px-6">Child / Plan</th>
+                        <th className="py-4 px-6">Amount</th>
+                        <th className="py-4 px-6">Status</th>
+                        <th className="py-4 px-6">Date</th>
+                      </>
+                    )}
+                    {activeTab === "contact" && (
+                      <>
+                        <th className="py-4 px-6">Name</th>
+                        <th className="py-4 px-6">Email / Phone</th>
+                        <th className="py-4 px-6">Message</th>
+                        <th className="py-4 px-6">Date</th>
+                        <th className="py-4 px-6 text-right">Actions</th>
+                      </>
+                    )}
+                    {activeTab === "career" && subTab === "applications" && (
+                      <>
+                        <th className="py-4 px-6">Candidate</th>
+                        <th className="py-4 px-6">Contact Info</th>
+                        <th className="py-4 px-6">Resume / Portfolio</th>
+                        <th className="py-4 px-6">Applied Date</th>
+                        <th className="py-4 px-6 text-right">Actions</th>
+                      </>
+                    )}
+                    {activeTab === "career" && subTab === "postings" && (
+                      <>
+                        <th className="py-4 px-6">Title</th>
+                        <th className="py-4 px-6">Department</th>
+                        <th className="py-4 px-6">Location / Type</th>
+                        <th className="py-4 px-6">Status</th>
+                        <th className="py-4 px-6 text-right">Actions</th>
+                      </>
+                    )}
+                    {["news", "blogs", "events", "reports", "yearbooks", "volunteer", "partner", "awards", "projects"].includes(activeTab) && (
+                      <>
+                        <th className="py-4 px-6">Title / Name</th>
+                        <th className="py-4 px-6">Meta / Details</th>
+                        <th className="py-4 px-6">Link / File</th>
+                        <th className="py-4 px-6 text-right">Actions</th>
+                      </>
+                    )}
                   </tr>
-                ) : data && data.length > 0 ? (
-                  data.map((item) => (
-                    <tr key={item._id} className="hover:bg-[#7b1e1e]/[0.03] transition-colors">
-                      {activeTab === "donations" ? (
+                </thead>
+                <tbody className="divide-y divide-stone-100 text-xs sm:text-sm text-stone-700">
+                  {data.map((item) => (
+                    <tr key={item._id || item.id} className="hover:bg-stone-50 transition">
+
+                      {activeTab === "donations" && (
                         <>
-                          <td className="p-4 text-sm text-gray-600">
-                            {new Date(item.createdAt).toLocaleDateString()}
-                          </td>
-                          <td className="p-4">
-                            <div className="font-semibold text-gray-900">{item.donorName || "Anonymous"}</div>
-                            <div className="text-sm text-gray-500">{item.donorEmail || "No email"}</div>
-                          </td>
-                          <td className="p-4 font-bold text-[#7b1e1e]">
-                            ${item.amount} {item.currency?.toUpperCase()}
-                          </td>
-                          <td className="p-4">
-                            <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#7b1e1e]/8 text-[#7b1e1e] border border-[#7b1e1e]/15">
-                              {item.status?.toUpperCase()}
+                          <td className="py-4 px-6 font-semibold text-[#4a0e0e]">{item.donorName || "Anonymous Donor"}</td>
+                          <td className="py-4 px-6">{item.donorEmail || item.email || "N/A"}</td>
+                          <td className="py-4 px-6 font-bold text-emerald-700">{item.currency ? item.currency.toUpperCase() : 'USD'} ${item.amount}</td>
+                          <td className="py-4 px-6 font-bold uppercase text-xs">
+                            <span className={`px-2.5 py-1 rounded-full text-[10px] ${item.status === 'paid' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+                              {item.status || 'pending'}
                             </span>
                           </td>
-                          <td className="p-4 text-sm text-gray-600 italic">
-                            {item.message || "-"}
-                          </td>
+                          <td className="py-4 px-6 font-mono text-xs">{item.paymentIntentId || item.checkoutSessionId || 'N/A'}</td>
+                          <td className="py-4 px-6 text-stone-500">{new Date(item.createdAt || Date.now()).toLocaleDateString()}</td>
                         </>
-                      ) : activeTab === "sponsorships" ? (
+                      )}
+
+                      {activeTab === "sponsorships" && (
                         <>
-                          <td className="p-4 text-sm text-gray-600">
-                            {new Date(item.createdAt).toLocaleDateString()}
-                          </td>
-                          <td className="p-4">
-                            <div className="font-semibold text-gray-900">{item.sponsorName || "Anonymous"}</div>
-                            <div className="text-sm text-gray-500">{item.sponsorEmail}</div>
-                          </td>
-                          <td className="p-4">
-                            <div className="font-semibold text-gray-900">{item.childName || "Unknown Child"}</div>
-                            <div className="text-xs text-gray-500">ID: {item.childId || "N/A"}</div>
-                          </td>
-                          <td className="p-4 font-bold text-[#7b1e1e]">
-                            ${item.amount}
-                          </td>
-                          <td className="p-4">
-                            <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#7b1e1e]/8 text-[#7b1e1e] border border-[#7b1e1e]/15">
-                              {item.status?.toUpperCase()}
+                          <td className="py-4 px-6 font-semibold text-[#4a0e0e]">{item.sponsorName || "Anonymous Sponsor"}</td>
+                          <td className="py-4 px-6">{item.sponsorEmail || item.email || "N/A"}</td>
+                          <td className="py-4 px-6 font-medium">{item.childName ? `Child: ${item.childName}` : (item.childId || 'Sponsorship Plan')}</td>
+                          <td className="py-4 px-6 font-bold text-emerald-700">{item.currency ? item.currency.toUpperCase() : 'USD'} ${item.amount} / {item.interval || 'month'}</td>
+                          <td className="py-4 px-6 font-bold uppercase text-xs">
+                            <span className={`px-2.5 py-1 rounded-full text-[10px] ${item.status === 'active' ? 'bg-emerald-100 text-emerald-800' : 'bg-stone-100 text-stone-700'}`}>
+                              {item.status || 'incomplete'}
                             </span>
                           </td>
-                          <td className="p-4 text-sm font-semibold text-gray-700">
-                            {item.nextBillingDate ? new Date(item.nextBillingDate).toLocaleDateString() : "Not Set"}
-                          </td>
+                          <td className="py-4 px-6 text-stone-500">{new Date(item.createdAt || Date.now()).toLocaleDateString()}</td>
                         </>
-                      ) : (
-                        // PROJECTS ROW
+                      )}
+
+                      {activeTab === "contact" && (
                         <>
-                          <td className="p-4 max-w-xs md:max-w-md">
-                            <div className="font-bold text-gray-900 text-base">{item.title}</div>
-                            <div className="text-xs text-gray-500 line-clamp-2 mt-1">{item.body}</div>
-                          </td>
-                          <td className="p-4">
-                            <span className="px-3 py-1 rounded-full text-xs font-bold uppercase bg-[#7b1e1e]/8 text-[#7b1e1e] border border-[#7b1e1e]/15">
-                              {item.status}
-                            </span>
-                          </td>
-                          <td className="p-4">
-                            <div className="flex flex-wrap gap-1">
-                              {item.tags && item.tags.length > 0 ? (
-                                item.tags.map((tag) => (
-                                  <span key={tag} className="px-2 py-0.5 bg-[#7b1e1e]/8 text-[#7b1e1e] rounded text-xs font-medium border border-[#7b1e1e]/15">
-                                    #{tag}
-                                  </span>
-                                ))
-                              ) : (
-                                <span className="text-xs text-gray-400">No tags</span>
-                              )}
-                            </div>
-                          </td>
-                          <td className="p-4 text-xs font-medium text-gray-600 whitespace-nowrap">
-                            {item.publishedDate ? new Date(item.publishedDate).toLocaleDateString() : "-"}
-                          </td>
-                          <td className="p-4 text-right">
-                            <div className="flex items-center justify-end gap-1.5">
-                              <button
-                                onClick={() => openViewModal(item)}
-                                className="p-2.5 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition"
-                                title="View Details"
-                              >
-                                <FaEye />
-                              </button>
-                              <button
-                                onClick={() => openEditModal(item)}
-                                className="p-2.5 text-sky-600 hover:text-sky-900 hover:bg-sky-50 rounded-lg transition"
-                                title="Edit Project"
-                              >
-                                <FaEdit />
-                              </button>
-                              <button
-                                onClick={() => setDeletingProject(item)}
-                                className="p-2.5 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-lg transition"
-                                title="Delete Project"
-                              >
-                                <FaTrash />
-                              </button>
-                            </div>
+                          <td className="py-4 px-6 font-semibold text-[#4a0e0e]">{item.name}</td>
+                          <td className="py-4 px-6">{item.email}<br/><span className="text-stone-400 text-xs">{item.phone}</span></td>
+                          <td className="py-4 px-6 max-w-xs truncate">{item.message}</td>
+                          <td className="py-4 px-6 text-stone-500">{new Date(item.createdAt || Date.now()).toLocaleDateString()}</td>
+                          <td className="py-4 px-6 text-right">
+                            <button onClick={() => setViewingItem(item)} className="p-2 text-stone-600 hover:text-[#7b1e1e]"><FaEye /></button>
+                            <button onClick={() => setDeletingItem(item)} className="p-2 text-red-600 hover:text-red-800"><FaTrash /></button>
                           </td>
                         </>
                       )}
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="6" className="p-12 text-center text-gray-400 font-semibold">
-                      No records found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
 
-          {/* Pagination */}
-          {!loading && totalPages > 1 && (
-            <div className="flex items-center justify-between p-4 border-t border-stone-100 bg-[#f8f5f3]/60">
-              <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="px-4 py-2 bg-white border border-stone-300 rounded-xl hover:border-[#7b1e1e] hover:text-[#7b1e1e] disabled:opacity-40 font-semibold text-sm transition"
-              >
-                Previous
-              </button>
-              <span className="text-sm text-gray-600 font-semibold">
-                Page <span className="text-[#7b1e1e]">{page}</span> of {totalPages}
-              </span>
-              <button
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-                className="px-4 py-2 bg-white border border-stone-300 rounded-xl hover:border-[#7b1e1e] hover:text-[#7b1e1e] disabled:opacity-40 font-semibold text-sm transition"
-              >
-                Next
-              </button>
+                      {activeTab === "career" && subTab === "applications" && (
+                        <>
+                          <td className="py-4 px-6 font-semibold text-[#4a0e0e]">{item.fullName}</td>
+                          <td className="py-4 px-6">{item.email}<br/><span className="text-stone-400 text-xs">{item.phone}</span></td>
+                          <td className="py-4 px-6">
+                            {item.resumeUrl && (
+                              <a href={item.resumeUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-[#7b1e1e] font-bold hover:underline">
+                                <FaDownload /> Resume
+                              </a>
+                            )}
+                          </td>
+                          <td className="py-4 px-6 text-stone-500">{new Date(item.createdAt || Date.now()).toLocaleDateString()}</td>
+                          <td className="py-4 px-6 text-right">
+                            <button onClick={() => setViewingItem(item)} className="p-2 text-stone-600 hover:text-[#7b1e1e]"><FaEye /></button>
+                            <button onClick={() => setDeletingItem(item)} className="p-2 text-red-600 hover:text-red-800"><FaTrash /></button>
+                          </td>
+                        </>
+                      )}
+
+                      {activeTab === "career" && subTab === "postings" && (
+                        <>
+                          <td className="py-4 px-6 font-semibold text-[#4a0e0e]">{item.title}</td>
+                          <td className="py-4 px-6">{item.department || "General"}</td>
+                          <td className="py-4 px-6">{item.location || "Remote"} ({item.jobType || "Full-Time"})</td>
+                          <td className="py-4 px-6 font-bold text-[#7b1e1e] uppercase text-xs">{item.status || "open"}</td>
+                          <td className="py-4 px-6 text-right">
+                            <button onClick={() => openEditModal(item)} className="p-2 text-stone-600 hover:text-[#7b1e1e]"><FaEdit /></button>
+                            <button onClick={() => setDeletingItem(item)} className="p-2 text-red-600 hover:text-red-800"><FaTrash /></button>
+                          </td>
+                        </>
+                      )}
+
+                      {["news", "blogs", "events", "reports", "yearbooks", "volunteer", "partner", "awards", "projects"].includes(activeTab) && (
+                        <>
+                          <td className="py-4 px-6 font-semibold text-[#4a0e0e] flex items-center gap-3">
+                            {(item.coverPhoto || item.picture || item.logo) && (
+                              <img src={item.coverPhoto || item.picture || item.logo} alt="" className="w-12 h-12 object-cover rounded-xl shrink-0 border border-stone-200 shadow-2xs" />
+                            )}
+                            <div>
+                              <div className="font-bold">{item.title || item.companyName || item.donorName}</div>
+                              {item.year && <span className="text-[11px] text-stone-400">Year: {item.year}</span>}
+                            </div>
+                          </td>
+                          <td className="py-4 px-6 max-w-xs truncate">
+                            {item.description || item.body || item.author || item.email || "N/A"}
+                          </td>
+                          <td className="py-4 px-6">
+                            {(item.fileUrl || item.pdfUrl || item.registrationLink || item.link || item.website) && (
+                              <a href={item.fileUrl || item.pdfUrl || item.registrationLink || item.link || item.website} target="_blank" rel="noreferrer" className="text-[#7b1e1e] font-bold hover:underline inline-flex items-center gap-1">
+                                <FaExternalLinkAlt className="text-xs" /> View Link
+                              </a>
+                            )}
+                          </td>
+                          <td className="py-4 px-6 text-right">
+                            <button onClick={() => openEditModal(item)} className="p-2 text-stone-600 hover:text-[#7b1e1e]"><FaEdit /></button>
+                            <button onClick={() => setDeletingItem(item)} className="p-2 text-red-600 hover:text-red-800"><FaTrash /></button>
+                          </td>
+                        </>
+                      )}
+
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </div>
 
+        {/* Pagination Footer */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-8">
+            <button
+              disabled={page === 1}
+              onClick={() => setPage(p => p - 1)}
+              className="px-4 py-2 bg-white border border-stone-200 rounded-lg text-xs font-semibold disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span className="text-xs text-stone-600 font-semibold px-2">
+              Page {page} of {totalPages}
+            </span>
+            <button
+              disabled={page === totalPages}
+              onClick={() => setPage(p => p + 1)}
+              className="px-4 py-2 bg-white border border-stone-200 rounded-lg text-xs font-semibold disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        )}
+
+        {/* Create Modal */}
+        {isCreateOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+            <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative">
+              <button onClick={() => setIsCreateOpen(false)} className="absolute top-4 right-4 text-stone-400 hover:text-stone-700">
+                <FaTimes />
+              </button>
+
+              <h2 className="text-xl font-bold text-[#4a0e0e] mb-6">Create New {activeTab}</h2>
+
+              <form onSubmit={handleCreateSubmit} className="space-y-4">
+                {Object.keys(formData).map((key) => renderFormField(key))}
+
+                <div className="pt-4 flex justify-end gap-3">
+                  <button type="button" onClick={() => setIsCreateOpen(false)} className="px-5 py-2 bg-stone-100 font-semibold text-xs rounded-xl">
+                    Cancel
+                  </button>
+                  <button type="submit" disabled={actionLoading} className="px-6 py-2 bg-[#7b1e1e] text-white font-bold text-xs rounded-xl hover:bg-[#5a0000]">
+                    {actionLoading ? "Creating..." : "Save Record"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Modal */}
+        {editingItem && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+            <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative">
+              <button onClick={() => setEditingItem(null)} className="absolute top-4 right-4 text-stone-400 hover:text-stone-700">
+                <FaTimes />
+              </button>
+
+              <h2 className="text-xl font-bold text-[#4a0e0e] mb-6">Edit {activeTab}</h2>
+
+              <form onSubmit={handleEditSubmit} className="space-y-4">
+                {Object.keys(formData).map((key) => {
+                  if (["_id", "__v", "createdAt", "updatedAt"].includes(key)) return null;
+                  return renderFormField(key);
+                })}
+
+                <div className="pt-4 flex justify-end gap-3">
+                  <button type="button" onClick={() => setEditingItem(null)} className="px-5 py-2 bg-stone-100 font-semibold text-xs rounded-xl">
+                    Cancel
+                  </button>
+                  <button type="submit" disabled={actionLoading} className="px-6 py-2 bg-[#7b1e1e] text-white font-bold text-xs rounded-xl hover:bg-[#5a0000]">
+                    {actionLoading ? "Updating..." : "Update Record"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* View Modal */}
+        {viewingItem && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+            <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full max-h-[85vh] overflow-y-auto shadow-2xl relative">
+              <button onClick={() => setViewingItem(null)} className="absolute top-4 right-4 text-stone-400 hover:text-stone-700">
+                <FaTimes />
+              </button>
+
+              <h2 className="text-xl font-bold text-[#4a0e0e] mb-4">View Record Details</h2>
+
+              <div className="space-y-3 text-sm text-stone-700">
+                {Object.entries(viewingItem).map(([k, v]) => (
+                  <div key={k} className="border-b border-stone-100 pb-2">
+                    <strong className="text-[#7b1e1e] font-semibold capitalize">{k}: </strong>
+                    <span>{typeof v === "object" ? JSON.stringify(v) : String(v)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Modal */}
+        {deletingItem && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+            <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl text-center">
+              <h3 className="text-lg font-bold text-[#4a0e0e] mb-2">Confirm Deletion</h3>
+              <p className="text-xs text-stone-500 mb-6">Are you sure you want to delete this record? This action cannot be undone.</p>
+
+              <div className="flex justify-center gap-3">
+                <button onClick={() => setDeletingItem(null)} className="px-5 py-2 bg-stone-100 text-xs font-semibold rounded-xl">
+                  Cancel
+                </button>
+                <button onClick={handleDeleteSubmit} disabled={actionLoading} className="px-6 py-2 bg-red-600 text-white text-xs font-bold rounded-xl hover:bg-red-700">
+                  {actionLoading ? "Deleting..." : "Delete"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
-
-      {/* CREATE PROJECT MODAL */}
-      {isCreateOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#4a0e0e]/40 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8">
-            <div className="flex justify-between items-center border-b border-stone-200 pb-4 mb-6">
-              <h2 className="text-2xl font-bold text-[#4a0e0e] flex items-center gap-2">
-                <FaPlus className="text-lg" /> Create New Project
-              </h2>
-              <button onClick={() => setIsCreateOpen(false)} className="text-gray-400 hover:text-gray-600 text-xl">
-                <FaTimes />
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateSubmit} className="space-y-5">
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1.5">Project Title *</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder="e.g. Clean Water & Health Initiative"
-                  className="w-full px-4 py-2.5 border border-stone-300 rounded-xl focus:outline-none focus:border-[#7b1e1e] focus:ring-2 focus:ring-[#7b1e1e]/15 transition"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1.5">Description / Body *</label>
-                <textarea
-                  required
-                  rows={4}
-                  value={formData.body}
-                  onChange={(e) => setFormData({ ...formData, body: e.target.value })}
-                  placeholder="Detailed description of the project..."
-                  className="w-full px-4 py-2.5 border border-stone-300 rounded-xl focus:outline-none focus:border-[#7b1e1e] focus:ring-2 focus:ring-[#7b1e1e]/15 transition resize-none"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-1.5">Status</label>
-                  <select
-                    value={formData.status}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-stone-300 rounded-xl focus:outline-none focus:border-[#7b1e1e] focus:ring-2 focus:ring-[#7b1e1e]/15 transition bg-white"
-                  >
-                    {STATUS_OPTIONS.map(status => (
-                      <option key={status} value={status}>{status.toUpperCase()}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-1.5 flex items-center gap-1.5">
-                    <FaCalendarAlt className="text-[#7b1e1e]/60" /> Published Date
-                  </label>
-                  <input
-                    type="datetime-local"
-                    value={formData.publishedDate}
-                    onChange={(e) => setFormData({ ...formData, publishedDate: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-stone-300 rounded-xl focus:outline-none focus:border-[#7b1e1e] focus:ring-2 focus:ring-[#7b1e1e]/15 transition"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Project Tags</label>
-                <div className="flex flex-wrap gap-2">
-                  {TAG_OPTIONS.map(tag => {
-                    const isSelected = formData.tags.includes(tag);
-                    return (
-                      <button
-                        type="button"
-                        key={tag}
-                        onClick={() => handleTagToggle(tag)}
-                        className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold border transition ${
-                          isSelected
-                            ? "bg-[#7b1e1e] text-white border-[#7b1e1e]"
-                            : "bg-stone-100 text-gray-700 border-stone-300 hover:border-[#7b1e1e]"
-                        }`}
-                      >
-                        {isSelected && <FaCheck className="text-xs" />}
-                        #{tag}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-3 pt-4 border-t border-stone-200">
-                <button
-                  type="button"
-                  onClick={() => setIsCreateOpen(false)}
-                  className="px-5 py-2.5 bg-stone-200 text-gray-700 font-semibold rounded-xl hover:bg-stone-300 transition text-sm"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={actionLoading}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-[#7b1e1e] hover:bg-[#611515] text-white font-bold rounded-xl transition text-sm disabled:opacity-50 shadow-md shadow-[#7b1e1e]/20"
-                >
-                  {actionLoading ? <FaSpinner className="animate-spin" /> : "Create Project"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* EDIT PROJECT MODAL */}
-      {editingProject && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#4a0e0e]/40 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8">
-            <div className="flex justify-between items-center border-b border-stone-200 pb-4 mb-6">
-              <h2 className="text-2xl font-bold text-[#4a0e0e] flex items-center gap-2">
-                <FaEdit className="text-lg" /> Edit Project
-              </h2>
-              <button onClick={() => setEditingProject(null)} className="text-gray-400 hover:text-gray-600 text-xl">
-                <FaTimes />
-              </button>
-            </div>
-
-            <form onSubmit={handleEditSubmit} className="space-y-5">
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1.5">Project Title *</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-stone-300 rounded-xl focus:outline-none focus:border-[#7b1e1e] focus:ring-2 focus:ring-[#7b1e1e]/15 transition"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1.5">Description / Body *</label>
-                <textarea
-                  required
-                  rows={4}
-                  value={formData.body}
-                  onChange={(e) => setFormData({ ...formData, body: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-stone-300 rounded-xl focus:outline-none focus:border-[#7b1e1e] focus:ring-2 focus:ring-[#7b1e1e]/15 transition resize-none"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-1.5">Status</label>
-                  <select
-                    value={formData.status}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-stone-300 rounded-xl focus:outline-none focus:border-[#7b1e1e] focus:ring-2 focus:ring-[#7b1e1e]/15 transition bg-white"
-                  >
-                    {STATUS_OPTIONS.map(status => (
-                      <option key={status} value={status}>{status.toUpperCase()}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-1.5 flex items-center gap-1.5">
-                    <FaCalendarAlt className="text-[#7b1e1e]/60" /> Published Date
-                  </label>
-                  <input
-                    type="datetime-local"
-                    value={formData.publishedDate}
-                    onChange={(e) => setFormData({ ...formData, publishedDate: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-stone-300 rounded-xl focus:outline-none focus:border-[#7b1e1e] focus:ring-2 focus:ring-[#7b1e1e]/15 transition"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Project Tags</label>
-                <div className="flex flex-wrap gap-2">
-                  {TAG_OPTIONS.map(tag => {
-                    const isSelected = formData.tags.includes(tag);
-                    return (
-                      <button
-                        type="button"
-                        key={tag}
-                        onClick={() => handleTagToggle(tag)}
-                        className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold border transition ${
-                          isSelected
-                            ? "bg-[#7b1e1e] text-white border-[#7b1e1e]"
-                            : "bg-stone-100 text-gray-700 border-stone-300 hover:border-[#7b1e1e]"
-                        }`}
-                      >
-                        {isSelected && <FaCheck className="text-xs" />}
-                        #{tag}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-3 pt-4 border-t border-stone-200">
-                <button
-                  type="button"
-                  onClick={() => setEditingProject(null)}
-                  className="px-5 py-2.5 bg-stone-200 text-gray-700 font-semibold rounded-xl hover:bg-stone-300 transition text-sm"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={actionLoading}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-[#7b1e1e] hover:bg-[#611515] text-white font-bold rounded-xl transition text-sm disabled:opacity-50 shadow-md shadow-[#7b1e1e]/20"
-                >
-                  {actionLoading ? <FaSpinner className="animate-spin" /> : "Save Changes"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* VIEW PROJECT DETAILS MODAL */}
-      {viewingProject && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#4a0e0e]/40 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8">
-            <div className="flex justify-between items-start border-b border-stone-200 pb-4 mb-4">
-              <div>
-                <span className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase mb-2 bg-[#7b1e1e]/8 text-[#7b1e1e] border border-[#7b1e1e]/15">
-                  {viewingProject.status}
-                </span>
-                <h2 className="text-2xl font-bold text-gray-900">{viewingProject.title}</h2>
-              </div>
-              <button onClick={() => setViewingProject(null)} className="text-gray-400 hover:text-gray-600 text-xl">
-                <FaTimes />
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex flex-wrap gap-4 text-xs text-gray-500 border-b border-stone-100 pb-3">
-                <div>
-                  <span className="font-semibold">Project ID:</span> {viewingProject._id}
-                </div>
-                <div>
-                  <span className="font-semibold">Published:</span> {viewingProject.publishedDate ? new Date(viewingProject.publishedDate).toLocaleString() : "N/A"}
-                </div>
-              </div>
-
-              <div>
-                <h4 className="text-xs uppercase font-bold text-gray-500 tracking-wider mb-1.5">Tags</h4>
-                <div className="flex flex-wrap gap-1.5">
-                  {viewingProject.tags && viewingProject.tags.length > 0 ? (
-                    viewingProject.tags.map(t => (
-                      <span key={t} className="px-2.5 py-1 bg-[#7b1e1e]/8 text-[#7b1e1e] rounded-md text-xs font-semibold border border-[#7b1e1e]/15">
-                        #{t}
-                      </span>
-                    ))
-                  ) : (
-                    <span className="text-gray-400 text-sm">No tags specified</span>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <h4 className="text-xs uppercase font-bold text-gray-500 tracking-wider mb-2">Description / Body</h4>
-                <div className="bg-[#f8f5f3] p-4 rounded-xl text-gray-700 whitespace-pre-wrap leading-relaxed text-sm border border-stone-200">
-                  {viewingProject.body}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end pt-6 border-t border-stone-200 mt-6">
-              <button
-                onClick={() => setViewingProject(null)}
-                className="px-6 py-2.5 bg-[#4a0e0e] text-white font-bold rounded-xl hover:bg-[#310909] transition text-sm"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* DELETE CONFIRMATION MODAL */}
-      {deletingProject && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#4a0e0e]/40 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-7 text-center">
-            <div className="w-14 h-14 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">
-              <FaTrash />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Delete Project</h3>
-            <p className="text-sm text-gray-600 mb-6">
-              Are you sure you want to delete <span className="font-bold text-gray-800">"{deletingProject.title}"</span>? This action cannot be undone.
-            </p>
-            <div className="flex justify-center gap-3">
-              <button
-                onClick={() => setDeletingProject(null)}
-                className="px-5 py-2.5 bg-stone-200 text-gray-700 font-semibold rounded-xl hover:bg-stone-300 transition text-sm"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={actionLoading}
-                className="flex items-center gap-2 px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition text-sm disabled:opacity-50"
-              >
-                {actionLoading ? <FaSpinner className="animate-spin" /> : "Yes, Delete"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
     </div>
   );
 }

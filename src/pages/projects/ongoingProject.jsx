@@ -109,6 +109,9 @@ export default function OngoingProjectsPage() {
           
           {/* Search Input */}
           <form onSubmit={handleSearchSubmit} className="relative flex-1 max-w-md">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+              <FaSearch className="text-stone-400 text-xs" />
+            </div>
             <input
               type="text"
               placeholder="Search projects..."
@@ -116,7 +119,6 @@ export default function OngoingProjectsPage() {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 bg-white border border-stone-200 rounded-xl text-sm focus:outline-none focus:border-[#7b1e1e] transition shadow-2xs"
             />
-            <FaSearch className="absolute left-3.5 top-3.5 text-stone-400 text-xs" />
           </form>
 
           {/* Tag Filter Chips */}

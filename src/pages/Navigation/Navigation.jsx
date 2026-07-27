@@ -60,6 +60,8 @@ const navLinks = [
       { href: "/news",   label: "News" },
       { href: "/blogs",  label: "Blogs" },
       { href: "/events", label: "Events" },
+      { href: "/reports", label: "Reports" },
+      { href: "/yearbook", label: "Yearbooks" },
     ],
   },
   {
@@ -67,11 +69,11 @@ const navLinks = [
     dropdown: [
       { href: "/mission", label: "Mission & Vision" },
       { href: "/values",  label: "Core Values" },
-      { href: "/impact",    label: "Impact" },
+      { href: "/impact",  label: "Impact" },
       { href: "/team",    label: "Meet the Team" },
       { href: "/contact", label: "Contact" },
-      { href: "/team",    label: "Award and Recognitions" },
-      { href: "/faq",    label: "FAQs" },
+      { href: "/awards",  label: "Award and Recognitions" },
+      { href: "/faq",     label: "FAQs" },
 
     ],
   },
@@ -79,8 +81,8 @@ const navLinks = [
     label: "Get Involved Us",
     dropdown: [
       { href: "/volunteer", label: "Volunteer" },
-      { href: "/partner",  label: "Partner with us" },
-      { href: "/team",    label: "Career" },
+      { href: "/partner",   label: "Partner with us" },
+      { href: "/career",    label: "Career" },
     ]
   },
 ];

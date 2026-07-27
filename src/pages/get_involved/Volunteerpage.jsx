@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FiHeart,
@@ -93,15 +93,62 @@ function VolunteerPage() {
     message: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [workingVolunteers, setWorkingVolunteers] = useState([]);
+
+  useEffect(() => {
+    fetchWorkingVolunteers();
+  }, []);
+
+  const fetchWorkingVolunteers = async () => {
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5006";
+      const res = await fetch(`${API_URL}/api/v1/volunteer?status=working`);
+      const result = await res.json();
+      if (result.status || result.data) {
+        const list = result.data?.data || (Array.isArray(result.data) ? result.data : result.volunteers || []);
+        setWorkingVolunteers(list);
+      }
+    } catch (err) {
+      console.error("Error fetching working volunteers", err);
+    }
+  };
 
   const handleChange = (e) =>
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: connect to your backend / email service here
-    console.log("Volunteer application:", form);
-    setSubmitted(true);
+    setSubmitting(true);
+    setError("");
+
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5006";
+      const res = await fetch(`${API_URL}/api/v1/volunteer`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          companyName: form.name,
+          email: form.email,
+          phone: form.phone,
+          description: `Interest: ${form.interest} | Availability: ${form.availability} | Note: ${form.message}`,
+          status: "applied"
+        })
+      });
+
+      const result = await res.json();
+      if (res.ok || result.status || result.data) {
+        setSubmitted(true);
+      } else {
+        setError(result.message || "Failed to submit application.");
+      }
+    } catch (err) {
+      console.error("Error submitting volunteer form", err);
+      setError("Network error. Could not connect to backend.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

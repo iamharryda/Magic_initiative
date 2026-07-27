@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FiTarget,
@@ -97,15 +97,62 @@ function PartnerPage() {
     message: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [activePartners, setActivePartners] = useState([]);
+
+  useEffect(() => {
+    fetchActivePartners();
+  }, []);
+
+  const fetchActivePartners = async () => {
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5006";
+      const res = await fetch(`${API_URL}/api/v1/partner?status=active_partner`);
+      const result = await res.json();
+      if (result.status || result.data) {
+        const list = result.data?.data || (Array.isArray(result.data) ? result.data : result.partners || []);
+        setActivePartners(list);
+      }
+    } catch (err) {
+      console.error("Error fetching active partners", err);
+    }
+  };
 
   const handleChange = (e) =>
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: connect to your backend / email service here
-    console.log("Partnership inquiry:", form);
-    setSubmitted(true);
+    setSubmitting(true);
+    setError("");
+
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5006";
+      const res = await fetch(`${API_URL}/api/v1/partner`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          companyName: form.org,
+          email: form.email,
+          phone: form.phone,
+          description: `Contact Person: ${form.contact} | Type: ${form.type} | Message: ${form.message}`,
+          status: "applied"
+        })
+      });
+
+      const result = await res.json();
+      if (res.ok || result.status || result.data) {
+        setSubmitted(true);
+      } else {
+        setError(result.message || "Failed to submit partnership application.");
+      }
+    } catch (err) {
+      console.error("Error submitting partner form", err);
+      setError("Network error. Could not connect to backend.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

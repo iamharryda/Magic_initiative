@@ -32,6 +32,17 @@ import OngoingProjectsPage from "./pages/projects/ongoingProject.jsx";
 import CompletedProjectsPage from "./pages/projects/completedProject.jsx";
 import ProjectDetailsPage from "./pages/projects/ProjectDetails.jsx";
 
+// Newly Integrated Pages
+import NewsPage from "./pages/news/NewsPage.jsx";
+import BlogsPage from "./pages/blogs/BlogsPage.jsx";
+import BlogDetailsPage from "./pages/blogs/BlogDetailsPage.jsx";
+import EventsPage from "./pages/events/EventsPage.jsx";
+import ReportsPage from "./pages/reports/ReportsPage.jsx";
+import YearbooksPage from "./pages/yearbook/YearbooksPage.jsx";
+import CareerPage from "./pages/career/CareerPage.jsx";
+import CareerApplyPage from "./pages/career/CareerApplyPage.jsx";
+import AwardsPage from "./pages/awards/AwardsPage.jsx";
+
 export default function App() {
   const [loading, setLoading] = useState(true);
   const location = useLocation();
@@ -66,6 +77,17 @@ export default function App() {
         <Route path="/projects/:id" element={<ProjectDetailsPage />} />
         <Route path="/programs/current" element={<OngoingProjectsPage />} />
         <Route path="/programs/completed" element={<CompletedProjectsPage />} />
+
+        {/* Dynamic Entity Routes */}
+        <Route path="/news" element={<NewsPage />} />
+        <Route path="/blogs" element={<BlogsPage />} />
+        <Route path="/blogs/:id" element={<BlogDetailsPage />} />
+        <Route path="/events" element={<EventsPage />} />
+        <Route path="/reports" element={<ReportsPage />} />
+        <Route path="/yearbook" element={<YearbooksPage />} />
+        <Route path="/career" element={<CareerPage />} />
+        <Route path="/career/apply/:id" element={<CareerApplyPage />} />
+        <Route path="/awards" element={<AwardsPage />} />
 
         <Route path="/contact" element={<ContactPage></ContactPage>} />
         <Route path="/faq" element={<FAQPage></FAQPage>} />
