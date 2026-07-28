@@ -28,8 +28,8 @@ export default function NewsPage() {
       const result = await res.json();
 
       if (result.status || result.data) {
-        const list = result.data?.data || (Array.isArray(result.data) ? result.data : result.news || []);
-        const total = result.data?.meta?.totalPages || result.totalPages || 1;
+        const list = result.data?.news || result.news || result.data?.data || (Array.isArray(result.data) ? result.data : []);
+        const total = result.data?.pagination?.totalPages || result.pagination?.totalPages || result.data?.meta?.totalPages || 1;
         setNewsList(list);
         setTotalPages(total);
       }
@@ -76,7 +76,7 @@ export default function NewsPage() {
               placeholder="Search news..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-white border border-stone-200 rounded-xl text-sm focus:outline-none focus:border-[#7b1e1e] shadow-sm transition"
+              className="w-full pl-10 pr-4 py-3 bg-white border border-stone-200 rounded-xl text-sm focus:outline-none focus:border-[#7b1e1e] shadow-xs transition"
             />
             <FaSearch className="absolute left-3.5 top-4 text-stone-400 text-xs" />
           </form>
@@ -90,7 +90,7 @@ export default function NewsPage() {
             <FaSpinner className="animate-spin text-3xl" />
           </div>
         ) : newsList.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-2xl border border-stone-200 shadow-sm max-w-lg mx-auto">
+          <div className="text-center py-20 bg-white rounded-2xl border border-stone-200 shadow-xs max-w-lg mx-auto">
             <FaNewspaper className="mx-auto text-4xl text-stone-300 mb-3" />
             <h3 className="text-lg font-semibold text-stone-700">No News Found</h3>
             <p className="text-xs text-stone-500 mt-1">Check back later for updates or search with different keywords.</p>
@@ -103,85 +103,94 @@ export default function NewsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
-                className="bg-white rounded-2xl overflow-hidden border border-stone-200/80 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col group"
+                className="group bg-white rounded-3xl p-5 sm:p-6 border border-stone-200/80 hover:border-[#7b1e1e]/40 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between"
               >
-                {/* Image */}
-                <div className="relative h-48 sm:h-52 bg-stone-100 overflow-hidden">
-                  <img
-                    src={item.picture || item.coverPhoto || "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80&w=800"}
-                    alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    onError={(e) => {
-                      e.target.src = "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80&w=800";
-                    }}
-                  />
-                  <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md text-white text-[11px] font-medium px-3 py-1 rounded-full flex items-center gap-1.5">
-                    <FaCalendarAlt className="text-[10px]" />
-                    {item.publishedDate ? new Date(item.publishedDate).toLocaleDateString() : new Date(item.createdAt || Date.now()).toLocaleDateString()}
+                <div>
+                  {/* Inner Rounded Cover Image Frame */}
+                  <div className="relative h-52 sm:h-60 rounded-2xl overflow-hidden bg-stone-100 mb-4 border border-stone-100">
+                    <img
+                      src={item.picture || item.coverPhoto || "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80&w=800"}
+                      alt={item.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      onError={(e) => {
+                        e.target.src = "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80&w=800";
+                      }}
+                    />
                   </div>
+
+                  {/* Title */}
+                  <h3 className="text-xl sm:text-2xl font-bold text-[#4a0e0e] group-hover:text-[#7b1e1e] transition-colors leading-snug mb-3 line-clamp-2">
+                    {item.title}
+                  </h3>
+
+                  {/* Body Snippet */}
+                  <p className="text-stone-600 text-sm leading-relaxed line-clamp-3 mb-4 font-normal">
+                    {item.description || "Click read more to view full press coverage and details."}
+                  </p>
+
+                  {/* Warm Maroon Pill Badges */}
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    <span className="bg-[#f9efef] text-[#7b1e1e] border border-[#7b1e1e]/15 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">
+                      Press Release
+                    </span>
+                  </div>
+
+                  {/* Date */}
+                  <p className="text-xs text-stone-400 font-medium mb-4">
+                    {item.publishedDate ? new Date(item.publishedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : new Date(item.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </p>
                 </div>
 
-                {/* Content */}
-                <div className="p-6 flex-1 flex flex-col justify-between">
-                  <div>
-                    <h3 className="text-xl font-bold text-[#4a0e0e] group-hover:text-[#7b1e1e] transition-colors line-clamp-2 mb-2">
-                      {item.title}
-                    </h3>
-                    <p className="text-stone-600 text-sm line-clamp-3 mb-4 leading-relaxed">
-                      {item.description || "Click see more to view full press coverage and news details."}
-                    </p>
-                  </div>
-
-                  <div className="pt-4 border-t border-stone-100 flex items-center justify-between">
-                    <button
-                      onClick={() => setSelectedNews(item)}
-                      className="inline-flex items-center gap-2 text-xs font-bold text-[#7b1e1e] hover:text-[#5a0000] uppercase tracking-wider transition"
+                <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
+                  <button
+                    onClick={() => setSelectedNews(item)}
+                    className="inline-flex items-center gap-2 text-xs font-bold text-[#7b1e1e] hover:text-[#5a0000] uppercase tracking-wider transition cursor-pointer"
+                  >
+                    <span>Read Details</span>
+                    &rarr;
+                  </button>
+                  {item.link && (
+                    <a
+                      href={item.link}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-stone-400 hover:text-[#7b1e1e] transition p-1"
+                      title="External Link"
                     >
-                      See More &rarr;
-                    </button>
-                    {item.link && (
-                      <a
-                        href={item.link}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-stone-400 hover:text-[#7b1e1e] transition p-1"
-                        title="External Link"
-                      >
-                        <FaExternalLinkAlt className="text-xs" />
-                      </a>
-                    )}
-                  </div>
+                      <FaExternalLinkAlt className="text-xs" />
+                    </a>
+                  )}
                 </div>
               </motion.div>
             ))}
           </div>
         )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-4 mt-12">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-4 py-2 bg-white border border-stone-200 rounded-xl hover:bg-stone-50 disabled:opacity-40 font-medium text-xs text-stone-700 cursor-pointer"
+            >
+              Previous
+            </button>
+            <span className="text-xs font-semibold text-stone-600">
+              {page} / {totalPages}
+            </span>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="px-4 py-2 bg-white border border-stone-200 rounded-xl hover:bg-stone-50 disabled:opacity-40 font-medium text-xs text-stone-700 cursor-pointer"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </section>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-12">
-          <button
-            disabled={page === 1}
-            onClick={() => setPage((p) => p - 1)}
-            className="px-4 py-2 bg-white border border-stone-200 text-stone-700 rounded-lg text-sm disabled:opacity-50 hover:bg-stone-50"
-          >
-            Previous
-          </button>
-          <span className="text-xs text-stone-600 font-medium px-2">
-            Page {page} of {totalPages}
-          </span>
-          <button
-            disabled={page === totalPages}
-            onClick={() => setPage((p) => p + 1)}
-            className="px-4 py-2 bg-white border border-stone-200 text-stone-700 rounded-lg text-sm disabled:opacity-50 hover:bg-stone-50"
-          >
-            Next
-          </button>
-        </div>
-      )}
-
-      {/* News Detail Modal */}
+      {/* Modal for Details */}
       <AnimatePresence>
         {selectedNews && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
@@ -189,16 +198,16 @@ export default function NewsPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-2xl overflow-hidden max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl relative"
+              className="bg-white rounded-3xl p-6 sm:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative"
             >
               <button
                 onClick={() => setSelectedNews(null)}
-                className="absolute top-4 right-4 z-10 w-9 h-9 bg-black/50 hover:bg-black/80 text-white rounded-full flex items-center justify-center transition"
+                className="absolute top-4 right-4 text-stone-400 hover:text-stone-700 cursor-pointer"
               >
                 <FaTimes />
               </button>
 
-              <div className="h-64 sm:h-72 bg-stone-100 relative">
+              <div className="h-64 rounded-2xl overflow-hidden bg-stone-100 mb-6">
                 <img
                   src={selectedNews.picture || selectedNews.coverPhoto || "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80&w=800"}
                   alt={selectedNews.title}
@@ -206,33 +215,33 @@ export default function NewsPage() {
                 />
               </div>
 
-              <div className="p-6 sm:p-8 overflow-y-auto">
-                <div className="flex items-center gap-2 text-xs font-semibold text-[#7b1e1e] mb-3">
-                  <FaCalendarAlt />
-                  {selectedNews.publishedDate ? new Date(selectedNews.publishedDate).toLocaleDateString() : new Date(selectedNews.createdAt || Date.now()).toLocaleDateString()}
-                </div>
+              <span className="text-xs font-semibold text-[#7b1e1e] bg-[#f9efef] px-3 py-1 rounded-full uppercase tracking-wider">
+                Press Release
+              </span>
 
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-[#4a0e0e] mb-4">
-                  {selectedNews.title}
-                </h2>
+              <h2 className="text-2xl font-bold text-[#4a0e0e] mt-3 mb-2">
+                {selectedNews.title}
+              </h2>
 
-                <div className="text-stone-700 text-sm sm:text-base leading-relaxed whitespace-pre-line mb-6">
-                  {selectedNews.description || "No full content description provided for this news item."}
-                </div>
+              <p className="text-xs text-stone-400 mb-4">
+                Published on {selectedNews.publishedDate ? new Date(selectedNews.publishedDate).toLocaleDateString() : new Date(selectedNews.createdAt || Date.now()).toLocaleDateString()}
+              </p>
 
-                {selectedNews.link && (
-                  <div className="pt-4 border-t border-stone-100 flex justify-end">
-                    <a
-                      href={selectedNews.link}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-2 bg-[#7b1e1e] hover:bg-[#5a0000] text-white font-semibold text-xs px-5 py-2.5 rounded-full transition shadow-sm"
-                    >
-                      Visit External Link <FaExternalLinkAlt className="text-xs" />
-                    </a>
-                  </div>
-                )}
+              <div className="text-stone-700 text-sm leading-relaxed whitespace-pre-line mb-6">
+                {selectedNews.description}
               </div>
+
+              {selectedNews.link && (
+                <a
+                  href={selectedNews.link}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#7b1e1e] text-white font-bold text-xs rounded-xl hover:bg-[#5a0000] transition cursor-pointer"
+                >
+                  <span>Visit External News Article</span>
+                  <FaExternalLinkAlt className="text-xs" />
+                </a>
+              )}
             </motion.div>
           </div>
         )}

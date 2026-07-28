@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { FaSearch, FaCalendarAlt, FaUser, FaTag, FaSpinner, FaBookOpen } from "react-icons/fa";
+import { FaSearch, FaCalendarAlt, FaUser, FaSpinner, FaBookOpen, FaArrowRight } from "react-icons/fa";
 
 export default function BlogsPage() {
   const [blogs, setBlogs] = useState([]);
@@ -29,8 +29,8 @@ export default function BlogsPage() {
       const result = await res.json();
 
       if (result.status || result.data) {
-        const list = result.data?.data || (Array.isArray(result.data) ? result.data : result.blogs || []);
-        const total = result.data?.meta?.totalPages || result.totalPages || 1;
+        const list = result.data?.blogs || result.blogs || result.data?.data || (Array.isArray(result.data) ? result.data : []);
+        const total = result.data?.pagination?.totalPages || result.pagination?.totalPages || result.data?.meta?.totalPages || 1;
         setBlogs(list);
         setTotalPages(total);
       }
@@ -77,7 +77,7 @@ export default function BlogsPage() {
               placeholder="Search blogs..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-white border border-stone-200 rounded-xl text-sm focus:outline-none focus:border-[#7b1e1e] shadow-sm transition"
+              className="w-full pl-10 pr-4 py-3 bg-white border border-stone-200 rounded-xl text-sm focus:outline-none focus:border-[#7b1e1e] shadow-xs transition"
             />
             <FaSearch className="absolute left-3.5 top-4 text-stone-400 text-xs" />
           </form>
@@ -91,7 +91,7 @@ export default function BlogsPage() {
             <FaSpinner className="animate-spin text-3xl" />
           </div>
         ) : blogs.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-2xl border border-stone-200 shadow-sm max-w-lg mx-auto">
+          <div className="text-center py-20 bg-white rounded-2xl border border-stone-200 shadow-xs max-w-lg mx-auto">
             <FaBookOpen className="mx-auto text-4xl text-stone-300 mb-3" />
             <h3 className="text-lg font-semibold text-stone-700">No Blogs Published Yet</h3>
             <p className="text-xs text-stone-500 mt-1">Stay tuned for insightful posts from our team.</p>
@@ -104,84 +104,86 @@ export default function BlogsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
-                className="bg-white rounded-2xl overflow-hidden border border-stone-200/80 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col group"
+                className="group bg-white rounded-3xl p-5 sm:p-6 border border-stone-200/80 hover:border-[#7b1e1e]/40 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between"
               >
-                {/* Cover Image */}
-                <div className="relative h-48 sm:h-52 bg-stone-100 overflow-hidden">
-                  <img
-                    src={blog.coverPhoto || "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=800"}
-                    alt={blog.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    onError={(e) => {
-                      e.target.src = "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=800";
-                    }}
-                  />
-                  {blog.tags && blog.tags.length > 0 && (
-                    <div className="absolute top-3 left-3 bg-[#7b1e1e]/90 backdrop-blur-md text-white text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider">
-                      {blog.tags[0]}
-                    </div>
-                  )}
+                <div>
+                  {/* Inner Cover Photo Frame */}
+                  <div className="relative h-52 sm:h-60 rounded-2xl overflow-hidden bg-stone-100 mb-4 border border-stone-100">
+                    <img
+                      src={blog.coverPhoto || "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=800"}
+                      alt={blog.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      onError={(e) => {
+                        e.target.src = "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=800";
+                      }}
+                    />
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="text-xl sm:text-2xl font-bold text-[#4a0e0e] group-hover:text-[#7b1e1e] transition-colors leading-snug mb-3 line-clamp-2">
+                    {blog.title}
+                  </h3>
+
+                  {/* Body Snippet */}
+                  <p className="text-stone-600 text-sm leading-relaxed line-clamp-3 mb-4 font-normal">
+                    {blog.body}
+                  </p>
+
+                  {/* Warm Maroon Pill Badges */}
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    <span className="bg-[#f9efef] text-[#7b1e1e] border border-[#7b1e1e]/15 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">
+                      {blog.author ? `By ${blog.author}` : "Blog Post"}
+                    </span>
+                    {blog.tags && blog.tags.map((t) => (
+                      <span key={t} className="bg-[#f9efef] text-[#7b1e1e] border border-[#7b1e1e]/15 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider capitalize">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Date */}
+                  <p className="text-xs text-stone-400 font-medium mb-4">
+                    {new Date(blog.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </p>
                 </div>
 
-                {/* Info */}
-                <div className="p-6 flex-1 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center gap-4 text-stone-500 text-xs mb-3">
-                      <span className="flex items-center gap-1">
-                        <FaUser className="text-[10px] text-[#7b1e1e]" />
-                        {blog.author || "Admin"}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <FaCalendarAlt className="text-[10px] text-[#7b1e1e]" />
-                        {new Date(blog.createdAt || Date.now()).toLocaleDateString()}
-                      </span>
-                    </div>
-
-                    <h3 className="text-xl font-bold text-[#4a0e0e] group-hover:text-[#7b1e1e] transition-colors line-clamp-2 mb-2">
-                      {blog.title}
-                    </h3>
-                    <p className="text-stone-600 text-sm line-clamp-3 mb-4 leading-relaxed">
-                      {blog.body ? blog.body.replace(/<[^>]+>/g, '') : "Read the full story to learn more."}
-                    </p>
-                  </div>
-
-                  <div className="pt-4 border-t border-stone-100 flex items-center justify-between">
-                    <Link
-                      to={`/blogs/${blog._id || blog.id}`}
-                      className="inline-flex items-center gap-2 text-xs font-bold text-[#7b1e1e] hover:text-[#5a0000] uppercase tracking-wider transition"
-                    >
-                      Read Full Blog &rarr;
-                    </Link>
-                  </div>
+                <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
+                  <Link
+                    to={`/blogs/${blog._id || blog.id}`}
+                    className="inline-flex items-center gap-2 text-xs font-bold text-[#7b1e1e] hover:text-[#5a0000] uppercase tracking-wider transition"
+                  >
+                    <span>Read Article</span>
+                    <FaArrowRight className="text-xs group-hover:translate-x-1 transition-transform" />
+                  </Link>
                 </div>
               </motion.div>
             ))}
           </div>
         )}
-      </section>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-12">
-          <button
-            disabled={page === 1}
-            onClick={() => setPage((p) => p - 1)}
-            className="px-4 py-2 bg-white border border-stone-200 text-stone-700 rounded-lg text-sm disabled:opacity-50 hover:bg-stone-50"
-          >
-            Previous
-          </button>
-          <span className="text-xs text-stone-600 font-medium px-2">
-            Page {page} of {totalPages}
-          </span>
-          <button
-            disabled={page === totalPages}
-            onClick={() => setPage((p) => p + 1)}
-            className="px-4 py-2 bg-white border border-stone-200 text-stone-700 rounded-lg text-sm disabled:opacity-50 hover:bg-stone-50"
-          >
-            Next
-          </button>
-        </div>
-      )}
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-4 mt-12">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-4 py-2 bg-white border border-stone-200 rounded-xl hover:bg-stone-50 disabled:opacity-40 font-medium text-xs text-stone-700 cursor-pointer"
+            >
+              Previous
+            </button>
+            <span className="text-xs font-semibold text-stone-600">
+              {page} / {totalPages}
+            </span>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="px-4 py-2 bg-white border border-stone-200 rounded-xl hover:bg-stone-50 disabled:opacity-40 font-medium text-xs text-stone-700 cursor-pointer"
+            >
+              Next
+            </button>
+          </div>
+        )}
+      </section>
     </div>
   );
 }

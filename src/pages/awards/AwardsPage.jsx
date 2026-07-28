@@ -28,8 +28,8 @@ export default function AwardsPage() {
       const result = await res.json();
 
       if (result.status || result.data) {
-        const list = result.data?.data || (Array.isArray(result.data) ? result.data : result.awards || []);
-        const total = result.data?.meta?.totalPages || result.totalPages || 1;
+        const list = result.data?.awards || result.awards || result.data?.data || (Array.isArray(result.data) ? result.data : []);
+        const total = result.data?.pagination?.totalPages || result.pagination?.totalPages || result.data?.meta?.totalPages || 1;
         setAwards(list);
         setTotalPages(total);
       }
@@ -76,7 +76,7 @@ export default function AwardsPage() {
               placeholder="Search awards..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-white border border-stone-200 rounded-xl text-sm focus:outline-none focus:border-[#7b1e1e] shadow-sm transition"
+              className="w-full pl-10 pr-4 py-3 bg-white border border-stone-200 rounded-xl text-sm focus:outline-none focus:border-[#7b1e1e] shadow-xs transition"
             />
             <FaSearch className="absolute left-3.5 top-4 text-stone-400 text-xs" />
           </form>
@@ -90,7 +90,7 @@ export default function AwardsPage() {
             <FaSpinner className="animate-spin text-3xl" />
           </div>
         ) : awards.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-2xl border border-stone-200 shadow-sm max-w-lg mx-auto">
+          <div className="text-center py-20 bg-white rounded-2xl border border-stone-200 shadow-xs max-w-lg mx-auto">
             <FaTrophy className="mx-auto text-4xl text-stone-300 mb-3" />
             <h3 className="text-lg font-semibold text-stone-700">No Awards Found</h3>
             <p className="text-xs text-stone-500 mt-1">Recognitions will appear here as awarded.</p>
@@ -104,84 +104,92 @@ export default function AwardsPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
                 onClick={() => setSelectedAward(award)}
-                className="bg-white rounded-2xl overflow-hidden border border-stone-200/80 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer flex flex-col group"
+                className="group bg-white rounded-3xl p-5 sm:p-6 border border-stone-200/80 hover:border-[#7b1e1e]/40 shadow-xs hover:shadow-md transition-all duration-300 cursor-pointer flex flex-col justify-between"
               >
-                {/* Cover Image */}
-                <div className="relative h-48 sm:h-52 bg-stone-100 overflow-hidden flex items-center justify-center">
-                  {award.coverPhoto ? (
-                    <img
-                      src={award.coverPhoto}
-                      alt={award.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  ) : (
-                    <div className="flex flex-col items-center text-stone-400">
-                      <FaAward className="text-5xl text-[#7b1e1e]/40 mb-2" />
-                      <span className="text-xs font-semibold uppercase tracking-wider text-stone-500">Honor Award</span>
-                    </div>
-                  )}
-
-                  {award.year && (
-                    <div className="absolute top-3 right-3 bg-[#7b1e1e] text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm flex items-center gap-1">
-                      <FaCalendarAlt className="text-[10px]" /> {award.year}
-                    </div>
-                  )}
-                </div>
-
-                {/* Content */}
-                <div className="p-6 flex-1 flex flex-col justify-between">
-                  <div>
-                    {award.issuer && (
-                      <div className="flex items-center gap-1.5 text-xs font-semibold text-[#7b1e1e] uppercase tracking-wider mb-2">
-                        <FaBuilding className="text-[10px]" /> {award.issuer}
+                <div>
+                  {/* Inner Cover Photo Frame */}
+                  <div className="relative h-52 sm:h-60 rounded-2xl overflow-hidden bg-stone-100 mb-4 border border-stone-100 flex items-center justify-center">
+                    {award.coverPhoto ? (
+                      <img
+                        src={award.coverPhoto}
+                        alt={award.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center text-stone-400">
+                        <FaAward className="text-5xl text-[#7b1e1e]/40 mb-2" />
+                        <span className="text-xs font-semibold uppercase tracking-wider text-stone-500">Honor Award</span>
                       </div>
                     )}
-
-                    <h3 className="text-xl font-bold text-[#4a0e0e] group-hover:text-[#7b1e1e] transition-colors line-clamp-2 mb-2">
-                      {award.title}
-                    </h3>
-                    
-                    <p className="text-stone-600 text-sm line-clamp-3 mb-4 leading-relaxed">
-                      {award.description}
-                    </p>
                   </div>
 
-                  <div className="pt-4 border-t border-stone-100 flex items-center justify-between">
-                    <span className="text-xs font-bold text-[#7b1e1e] uppercase tracking-wider">
-                      Read Full Details &rarr;
-                    </span>
+                  {/* Title */}
+                  <h3 className="text-xl sm:text-2xl font-bold text-[#4a0e0e] group-hover:text-[#7b1e1e] transition-colors leading-snug mb-3 line-clamp-2">
+                    {award.title}
+                  </h3>
+
+                  {/* Body Snippet */}
+                  <p className="text-stone-600 text-sm leading-relaxed line-clamp-3 mb-4 font-normal">
+                    {award.description}
+                  </p>
+
+                  {/* Warm Maroon Pill Badges */}
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {award.issuer && (
+                      <span className="bg-[#f9efef] text-[#7b1e1e] border border-[#7b1e1e]/15 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">
+                        {award.issuer}
+                      </span>
+                    )}
+                    {award.year && (
+                      <span className="bg-[#f9efef] text-[#7b1e1e] border border-[#7b1e1e]/15 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">
+                        Year {award.year}
+                      </span>
+                    )}
                   </div>
+                </div>
+
+                <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
+                  <button
+                    onClick={() => setSelectedAward(award)}
+                    className="inline-flex items-center gap-2 text-xs font-bold text-[#7b1e1e] hover:text-[#5a0000] uppercase tracking-wider transition cursor-pointer"
+                  >
+                    <span>View Award Honor</span>
+                    &rarr;
+                  </button>
                 </div>
               </motion.div>
             ))}
           </div>
         )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-4 mt-12">
+            <button
+              disabled={page === 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              className="px-4 py-2 bg-white border border-stone-200 rounded-xl hover:bg-stone-50 disabled:opacity-40 font-medium text-xs text-stone-700 cursor-pointer"
+            >
+              Previous
+            </button>
+            <span className="text-xs font-semibold text-stone-600">
+              {page} / {totalPages}
+            </span>
+            <button
+              disabled={page === totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              className="px-4 py-2 bg-white border border-stone-200 rounded-xl hover:bg-stone-50 disabled:opacity-40 font-medium text-xs text-stone-700 cursor-pointer"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </section>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-12">
-          <button
-            disabled={page === 1}
-            onClick={() => setPage((p) => p - 1)}
-            className="px-4 py-2 bg-white border border-stone-200 text-stone-700 rounded-lg text-sm disabled:opacity-50 hover:bg-stone-50"
-          >
-            Previous
-          </button>
-          <span className="text-xs text-stone-600 font-medium px-2">
-            Page {page} of {totalPages}
-          </span>
-          <button
-            disabled={page === totalPages}
-            onClick={() => setPage((p) => p + 1)}
-            className="px-4 py-2 bg-white border border-stone-200 text-stone-700 rounded-lg text-sm disabled:opacity-50 hover:bg-stone-50"
-          >
-            Next
-          </button>
-        </div>
-      )}
-
-      {/* Award Detail Modal */}
+      {/* Modal Details */}
       <AnimatePresence>
         {selectedAward && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
@@ -189,46 +197,43 @@ export default function AwardsPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-2xl overflow-hidden max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl relative"
+              className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full max-h-[85vh] overflow-y-auto shadow-2xl relative"
             >
               <button
                 onClick={() => setSelectedAward(null)}
-                className="absolute top-4 right-4 z-10 w-9 h-9 bg-black/50 hover:bg-black/80 text-white rounded-full flex items-center justify-center transition"
+                className="absolute top-4 right-4 text-stone-400 hover:text-stone-700 cursor-pointer"
               >
                 <FaTimes />
               </button>
 
-              {selectedAward.coverPhoto && (
-                <div className="h-60 sm:h-64 bg-stone-100 relative">
+              <div className="h-56 rounded-2xl overflow-hidden bg-stone-100 mb-6 flex items-center justify-center">
+                {selectedAward.coverPhoto ? (
                   <img
                     src={selectedAward.coverPhoto}
                     alt={selectedAward.title}
                     className="w-full h-full object-cover"
                   />
-                </div>
+                ) : (
+                  <FaTrophy className="text-6xl text-[#7b1e1e]/40" />
+                )}
+              </div>
+
+              <span className="text-xs font-semibold text-[#7b1e1e] bg-[#f9efef] px-3 py-1 rounded-full uppercase tracking-wider">
+                Award Recognition {selectedAward.year ? `(${selectedAward.year})` : ""}
+              </span>
+
+              <h2 className="text-2xl font-bold text-[#4a0e0e] mt-3 mb-2">
+                {selectedAward.title}
+              </h2>
+
+              {selectedAward.issuer && (
+                <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-4 flex items-center gap-1.5">
+                  <FaBuilding className="text-[#7b1e1e]" /> Issued by {selectedAward.issuer}
+                </p>
               )}
 
-              <div className="p-6 sm:p-8 overflow-y-auto">
-                <div className="flex items-center gap-3 text-xs font-semibold text-[#7b1e1e] mb-3">
-                  {selectedAward.year && (
-                    <span className="bg-[#f9efef] px-3 py-1 rounded-full flex items-center gap-1">
-                      <FaCalendarAlt /> Year: {selectedAward.year}
-                    </span>
-                  )}
-                  {selectedAward.issuer && (
-                    <span className="bg-[#f9efef] px-3 py-1 rounded-full flex items-center gap-1">
-                      <FaBuilding /> Issued by: {selectedAward.issuer}
-                    </span>
-                  )}
-                </div>
-
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-[#4a0e0e] mb-4">
-                  {selectedAward.title}
-                </h2>
-
-                <div className="text-stone-700 text-sm sm:text-base leading-relaxed whitespace-pre-line">
-                  {selectedAward.description}
-                </div>
+              <div className="text-stone-700 text-sm leading-relaxed whitespace-pre-line">
+                {selectedAward.description}
               </div>
             </motion.div>
           </div>

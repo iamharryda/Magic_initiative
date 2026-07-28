@@ -28,6 +28,19 @@ import {
 
 import ImageUploadInput from "../../components/upload/ImageUploadInput.jsx";
 
+const TAG_OPTIONS = [
+  'education',
+  'youth',
+  'empowerment',
+  'health',
+  'emergency',
+  'climate',
+  'research',
+  'peace',
+];
+
+const STATUS_OPTIONS = ['ongoing', 'completed'];
+
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("donations");
@@ -52,6 +65,17 @@ export default function AdminDashboard() {
 
   const [actionLoading, setActionLoading] = useState(false);
   const [alertMsg, setAlertMsg] = useState({ type: "", message: "" });
+
+  const handleTagToggle = (tag) => {
+    setFormData((prev) => {
+      const currentTags = Array.isArray(prev.tags) ? prev.tags : [];
+      const exists = currentTags.includes(tag);
+      const updatedTags = exists
+        ? currentTags.filter((t) => t !== tag)
+        : [...currentTags, tag];
+      return { ...prev, tags: updatedTags };
+    });
+  };
 
   useEffect(() => {
     // Check auth
@@ -452,11 +476,11 @@ export default function AdminDashboard() {
 
   const currentTabObj = tabsConfig.find((t) => t.id === activeTab);
 
-  // Form field renderer with ImageUploadInput for cover photos / pictures
+  // Form field renderer with ImageUploadInput for cover photos / pictures / PDFs and Tag / Status selectors
   const renderFormField = (key) => {
-    const isImageKey = ["coverPhoto", "picture", "logo"].includes(key);
+    const isUploadKey = ["coverPhoto", "picture", "logo", "fileUrl", "pdfUrl", "resumeUrl"].includes(key);
 
-    if (isImageKey) {
+    if (isUploadKey) {
       return (
         <ImageUploadInput
           key={key}
@@ -470,7 +494,26 @@ export default function AdminDashboard() {
       );
     }
 
-    if (["_id", "__v", "createdAt", "updatedAt", "tags"].includes(key)) return null;
+    if (key === "status" && activeTab === "projects") {
+      return (
+        <div key={key}>
+          <label className="block text-xs font-bold text-[#7b1e1e] uppercase tracking-wider mb-1">
+            Project Status
+          </label>
+          <select
+            value={formData.status || "ongoing"}
+            onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+            className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:outline-none focus:border-[#7b1e1e]"
+          >
+            <option value="ongoing">Ongoing</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+      );
+    }
+
+    if (["_id", "__v", "createdAt", "updatedAt"].includes(key)) return null;
+    if (key === "tags") return null; // rendered separately below
 
     return (
       <div key={key}>
@@ -496,6 +539,37 @@ export default function AdminDashboard() {
             className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:outline-none focus:border-[#7b1e1e]"
           />
         )}
+      </div>
+    );
+  };
+
+  const renderTagsSection = () => {
+    if (activeTab !== "projects" && activeTab !== "blogs") return null;
+    const selectedTags = Array.isArray(formData.tags) ? formData.tags : [];
+    return (
+      <div className="space-y-1.5">
+        <label className="block text-xs font-bold text-[#7b1e1e] uppercase tracking-wider">
+          Tags (Select All That Apply)
+        </label>
+        <div className="flex flex-wrap gap-1.5 pt-1">
+          {TAG_OPTIONS.map((tag) => {
+            const isSelected = selectedTags.includes(tag);
+            return (
+              <button
+                key={tag}
+                type="button"
+                onClick={() => handleTagToggle(tag)}
+                className={`px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider transition cursor-pointer ${
+                  isSelected
+                    ? "bg-[#7b1e1e] text-white shadow-xs"
+                    : "bg-stone-100 text-stone-600 hover:bg-stone-200 border border-stone-200"
+                }`}
+              >
+                #{tag}
+              </button>
+            );
+          })}
+        </div>
       </div>
     );
   };
@@ -729,7 +803,7 @@ export default function AdminDashboard() {
                       {activeTab === "donations" && (
                         <>
                           <td className="py-4 px-6 font-semibold text-[#4a0e0e]">
-                            {item.donorName || "Anonymous Donor"}
+                            {item.donorName || item.name || item.donorEmail || item.email || "N/A"}
                           </td>
                           <td className="py-4 px-6">
                             {item.donorEmail || item.email || "N/A"}
@@ -757,7 +831,7 @@ export default function AdminDashboard() {
                       {activeTab === "sponsorships" && (
                         <>
                           <td className="py-4 px-6 font-semibold text-[#4a0e0e]">
-                            {item.sponsorName || "Anonymous Sponsor"}
+                            {item.sponsorName || item.name || item.sponsorEmail || item.email || "N/A"}
                           </td>
                           <td className="py-4 px-6">
                             {item.sponsorEmail || item.email || "N/A"}
@@ -1028,6 +1102,7 @@ export default function AdminDashboard() {
 
               <form onSubmit={handleCreateSubmit} className="space-y-4">
                 {Object.keys(formData).map((key) => renderFormField(key))}
+                {renderTagsSection()}
 
                 <div className="pt-4 flex justify-end gap-3">
                   <button
@@ -1067,6 +1142,7 @@ export default function AdminDashboard() {
 
               <form onSubmit={handleEditSubmit} className="space-y-4">
                 {Object.keys(formData).map((key) => renderFormField(key))}
+                {renderTagsSection()}
 
                 <div className="pt-4 flex justify-end gap-3">
                   <button

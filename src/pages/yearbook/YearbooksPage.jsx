@@ -27,8 +27,8 @@ export default function YearbooksPage() {
       const result = await res.json();
 
       if (result.status || result.data) {
-        const list = result.data?.data || (Array.isArray(result.data) ? result.data : result.yearbooks || []);
-        const total = result.data?.meta?.totalPages || result.totalPages || 1;
+        const list = result.data?.yearbooks || result.yearbooks || result.data?.data || (Array.isArray(result.data) ? result.data : []);
+        const total = result.data?.pagination?.totalPages || result.pagination?.totalPages || result.data?.meta?.totalPages || 1;
         setYearbooks(list);
         setTotalPages(total);
       }
@@ -75,7 +75,7 @@ export default function YearbooksPage() {
               placeholder="Search yearbooks..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-white border border-stone-200 rounded-xl text-sm focus:outline-none focus:border-[#7b1e1e] shadow-sm transition"
+              className="w-full pl-10 pr-4 py-3 bg-white border border-stone-200 rounded-xl text-sm focus:outline-none focus:border-[#7b1e1e] shadow-xs transition"
             />
             <FaSearch className="absolute left-3.5 top-4 text-stone-400 text-xs" />
           </form>
@@ -89,7 +89,7 @@ export default function YearbooksPage() {
             <FaSpinner className="animate-spin text-3xl" />
           </div>
         ) : yearbooks.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-2xl border border-stone-200 shadow-sm max-w-lg mx-auto">
+          <div className="text-center py-20 bg-white rounded-2xl border border-stone-200 shadow-xs max-w-lg mx-auto">
             <FaBook className="mx-auto text-4xl text-stone-300 mb-3" />
             <h3 className="text-lg font-semibold text-stone-700">No Yearbooks Available</h3>
             <p className="text-xs text-stone-500 mt-1">Yearbook archives will appear here when published.</p>
@@ -102,81 +102,88 @@ export default function YearbooksPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
-                className="bg-white rounded-2xl overflow-hidden border border-stone-200/80 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group"
+                className="group bg-white rounded-3xl p-5 sm:p-6 border border-stone-200/80 hover:border-[#7b1e1e]/40 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between"
               >
-                {/* Cover Image Header */}
-                <div className="relative h-56 bg-stone-100 overflow-hidden flex items-center justify-center">
-                  {item.coverPhoto ? (
-                    <img
-                      src={item.coverPhoto}
-                      alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  ) : (
-                    <div className="flex flex-col items-center justify-center text-stone-400">
-                      <FaBook className="text-5xl text-[#7b1e1e]/40 mb-2" />
-                      <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Yearbook Edition</span>
-                    </div>
-                  )}
-                  {item.year && (
-                    <div className="absolute top-3 right-3 bg-[#7b1e1e] text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm flex items-center gap-1">
-                      <FaCalendarAlt className="text-[10px]" /> {item.year}
-                    </div>
-                  )}
-                </div>
-
-                {/* Content */}
-                <div className="p-6 flex-1 flex flex-col justify-between">
-                  <div>
-                    <h3 className="text-xl font-bold text-[#4a0e0e] group-hover:text-[#7b1e1e] transition-colors line-clamp-2 mb-2">
-                      {item.title}
-                    </h3>
-                    {item.description && (
-                      <p className="text-stone-600 text-sm line-clamp-3 mb-4 leading-relaxed">
-                        {item.description}
-                      </p>
+                <div>
+                  {/* Inner Cover Photo Frame */}
+                  <div className="relative h-52 sm:h-60 rounded-2xl overflow-hidden bg-stone-100 mb-4 border border-stone-100 flex items-center justify-center">
+                    {item.coverPhoto ? (
+                      <img
+                        src={item.coverPhoto}
+                        alt={item.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center text-stone-400">
+                        <FaBook className="text-5xl text-[#7b1e1e]/40 mb-2" />
+                        <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Yearbook Edition</span>
+                      </div>
                     )}
                   </div>
 
-                  <div className="pt-4 border-t border-stone-100">
+                  {/* Title */}
+                  <h3 className="text-xl sm:text-2xl font-bold text-[#4a0e0e] group-hover:text-[#7b1e1e] transition-colors leading-snug mb-3 line-clamp-2">
+                    {item.title}
+                  </h3>
+
+                  {/* Body Snippet */}
+                  <p className="text-stone-600 text-sm leading-relaxed line-clamp-3 mb-4 font-normal">
+                    {item.description || "Annual yearbook publication and milestone documentation."}
+                  </p>
+
+                  {/* Warm Maroon Pill Badges */}
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    <span className="bg-[#f9efef] text-[#7b1e1e] border border-[#7b1e1e]/15 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">
+                      Yearbook {item.year || ""}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
+                  {item.pdfUrl && (
                     <a
                       href={item.pdfUrl}
+                      download
                       target="_blank"
                       rel="noreferrer"
-                      className="w-full inline-flex items-center justify-center gap-2 bg-[#7b1e1e] hover:bg-[#5a0000] text-white font-semibold text-xs px-4 py-3 rounded-xl transition shadow-sm"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-[#7b1e1e] text-white font-bold text-xs rounded-xl hover:bg-[#5a0000] transition cursor-pointer"
                     >
-                      <FaDownload className="text-xs" /> View / Download PDF
+                      <FaDownload className="text-xs" />
+                      <span>Download Yearbook</span>
                     </a>
-                  </div>
+                  )}
                 </div>
               </motion.div>
             ))}
           </div>
         )}
-      </section>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-12">
-          <button
-            disabled={page === 1}
-            onClick={() => setPage((p) => p - 1)}
-            className="px-4 py-2 bg-white border border-stone-200 text-stone-700 rounded-lg text-sm disabled:opacity-50 hover:bg-stone-50"
-          >
-            Previous
-          </button>
-          <span className="text-xs text-stone-600 font-medium px-2">
-            Page {page} of {totalPages}
-          </span>
-          <button
-            disabled={page === totalPages}
-            onClick={() => setPage((p) => p + 1)}
-            className="px-4 py-2 bg-white border border-stone-200 text-stone-700 rounded-lg text-sm disabled:opacity-50 hover:bg-stone-50"
-          >
-            Next
-          </button>
-        </div>
-      )}
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-4 mt-12">
+            <button
+              disabled={page === 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              className="px-4 py-2 bg-white border border-stone-200 rounded-xl hover:bg-stone-50 disabled:opacity-40 font-medium text-xs text-stone-700 cursor-pointer"
+            >
+              Previous
+            </button>
+            <span className="text-xs font-semibold text-stone-600">
+              {page} / {totalPages}
+            </span>
+            <button
+              disabled={page === totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              className="px-4 py-2 bg-white border border-stone-200 rounded-xl hover:bg-stone-50 disabled:opacity-40 font-medium text-xs text-stone-700 cursor-pointer"
+            >
+              Next
+            </button>
+          </div>
+        )}
+      </section>
     </div>
   );
 }

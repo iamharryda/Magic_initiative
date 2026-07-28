@@ -83,27 +83,27 @@ export default function OngoingProjectsPage() {
   };
 
   return (
-    <div className="bg-[#f8f5f3] min-h-screen text-[#4a0e0e] pt-12 pb-24">
-      {/* Minimal Header */}
+    <div className="bg-[#f8f5f3] min-h-screen text-[#4a0e0e] pt-12 pb-24 font-sans">
+      {/* Header */}
       <section className="py-12 sm:py-16 text-center max-w-4xl mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <span className="text-xs font-bold tracking-widest text-[#7b1e1e] uppercase">
-            Initiatives
+          <span className="text-xs font-bold tracking-widest text-[#7b1e1e] uppercase bg-[#f0e4e4] px-4 py-1.5 rounded-full">
+            Initiatives & Programs
           </span>
-          <h1 className="text-3xl sm:text-5xl font-bold text-[#4a0e0e] mt-2 mb-3 tracking-tight">
+          <h1 className="text-3xl sm:text-5xl font-extrabold text-[#4a0e0e] mt-4 mb-3 tracking-tight">
             Ongoing Projects
           </h1>
-          <p className="text-gray-600 text-sm sm:text-base max-w-xl mx-auto font-normal">
+          <p className="text-stone-600 text-sm sm:text-base max-w-xl mx-auto font-normal">
             Current programs actively driving sustainable change across communities.
           </p>
         </motion.div>
       </section>
 
-      {/* Minimal Filter & Search Bar */}
+      {/* Filter & Search Bar */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
           
@@ -125,9 +125,9 @@ export default function OngoingProjectsPage() {
           <div className="flex flex-wrap items-center gap-1.5">
             <button
               onClick={() => { setSelectedTag(""); setPage(1); }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition ${
                 selectedTag === ""
-                  ? "bg-[#7b1e1e] text-white"
+                  ? "bg-[#7b1e1e] text-white shadow-xs"
                   : "bg-white text-stone-600 border border-stone-200 hover:bg-stone-100"
               }`}
             >
@@ -137,9 +137,9 @@ export default function OngoingProjectsPage() {
               <button
                 key={tag}
                 onClick={() => { setSelectedTag(tag); setPage(1); }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition ${
                   selectedTag === tag
-                    ? "bg-[#7b1e1e] text-white"
+                    ? "bg-[#7b1e1e] text-white shadow-xs"
                     : "bg-white text-stone-600 border border-stone-200 hover:bg-stone-100"
                 }`}
               >
@@ -150,7 +150,7 @@ export default function OngoingProjectsPage() {
         </div>
       </section>
 
-      {/* Projects Minimal Grid */}
+      {/* Projects Grid */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 text-stone-500">
@@ -163,58 +163,64 @@ export default function OngoingProjectsPage() {
               variants={containerVariants}
               initial="hidden"
               animate="visible"
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
             >
               {projects.map((project) => (
                 <motion.div
-                  key={project._id}
+                  key={project._id || project.id}
                   variants={cardVariants}
                   whileHover={{ y: -4 }}
-                  className="group bg-white rounded-2xl p-6 sm:p-7 border border-stone-200 hover:border-[#7b1e1e]/40 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between"
+                  className="group bg-white rounded-3xl p-5 sm:p-6 border border-stone-200/80 hover:border-[#7b1e1e]/40 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between"
                 >
                   <div>
-                    {/* Header: Tag & Date */}
-                    <div className="flex items-center justify-between text-xs text-stone-500 mb-4">
-                      <span className="font-semibold px-2.5 py-1 rounded-full bg-[#7b1e1e]/10 text-[#7b1e1e]">
-                        Ongoing
-                      </span>
-                      {project.publishedDate && (
-                        <span className="flex items-center gap-1">
-                          <FaCalendarAlt className="text-stone-400 text-[11px]" />
-                          {new Date(project.publishedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                        </span>
-                      )}
+                    {/* Inner Rounded Cover Image Frame */}
+                    <div className="relative h-52 sm:h-60 rounded-2xl overflow-hidden bg-stone-100 mb-4 border border-stone-100">
+                      <img
+                        src={project.coverPhoto || "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=800"}
+                        alt={project.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={(e) => {
+                          e.target.src = "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=800";
+                        }}
+                      />
                     </div>
 
                     {/* Title */}
-                    <h2 className="text-xl font-bold text-gray-900 group-hover:text-[#7b1e1e] transition-colors mb-3 line-clamp-2">
+                    <h2 className="text-xl sm:text-2xl font-bold text-[#4a0e0e] group-hover:text-[#7b1e1e] transition-colors leading-snug mb-3 line-clamp-2">
                       {project.title}
                     </h2>
 
                     {/* Body Snippet */}
-                    <p className="text-stone-600 text-sm leading-relaxed line-clamp-3 mb-6 font-normal">
+                    <p className="text-stone-600 text-sm leading-relaxed line-clamp-3 mb-4 font-normal">
                       {project.body}
                     </p>
+
+                    {/* Warm Maroon Pill Badges */}
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      <span className="bg-[#f9efef] text-[#7b1e1e] border border-[#7b1e1e]/15 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">
+                        Current Project
+                      </span>
+                      {project.tags && project.tags.map((t) => (
+                        <span key={t} className="bg-[#f9efef] text-[#7b1e1e] border border-[#7b1e1e]/15 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider capitalize">
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Date */}
+                    {project.publishedDate && (
+                      <p className="text-xs text-stone-400 font-medium mb-4">
+                        {new Date(project.publishedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </p>
+                    )}
                   </div>
 
-                  <div>
-                    {/* Tags */}
-                    {project.tags && project.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 mb-5">
-                        {project.tags.map(t => (
-                          <span key={t} className="text-[11px] font-medium text-stone-500 bg-stone-100 px-2 py-0.5 rounded">
-                            #{t}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* View Details Link */}
+                  <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
                     <Link
-                      to={`/projects/${project._id}`}
-                      className="inline-flex items-center gap-2 text-sm font-bold text-[#7b1e1e] hover:text-[#5a1414] transition-colors"
+                      to={`/projects/${project._id || project.id}`}
+                      className="inline-flex items-center gap-2 text-xs font-bold text-[#7b1e1e] hover:text-[#5a0000] uppercase tracking-wider transition"
                     >
-                      <span>Read Project Details</span>
+                      <span>Read Details</span>
                       <FaArrowRight className="text-xs group-hover:translate-x-1 transition-transform" />
                     </Link>
                   </div>
@@ -222,7 +228,7 @@ export default function OngoingProjectsPage() {
               ))}
             </motion.div>
 
-            {/* Minimal Pagination */}
+            {/* Pagination */}
             {totalPages > 1 && (
               <div className="flex justify-center items-center gap-4 mt-12">
                 <button

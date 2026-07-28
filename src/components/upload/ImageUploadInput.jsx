@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { FaCloudUploadAlt, FaSpinner, FaTrash, FaImage, FaCheckCircle } from "react-icons/fa";
+import { FaCloudUploadAlt, FaSpinner, FaTrash, FaFilePdf, FaCheckCircle, FaFileAlt } from "react-icons/fa";
 
-export default function ImageUploadInput({ label, value, onChange, placeholder = "Upload cover photo or image" }) {
+export default function ImageUploadInput({ label, value, onChange, placeholder = "Upload file (Image or PDF)" }) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
 
@@ -44,10 +44,12 @@ export default function ImageUploadInput({ label, value, onChange, placeholder =
     setError("");
   };
 
+  const isPdf = value && (value.toLowerCase().includes(".pdf") || value.toLowerCase().endsWith(".pdf"));
+
   return (
     <div className="space-y-2 font-sans">
       {label && (
-        <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider">
+        <label className="block text-xs font-bold text-[#7b1e1e] uppercase tracking-wider">
           {label}
         </label>
       )}
@@ -55,17 +57,24 @@ export default function ImageUploadInput({ label, value, onChange, placeholder =
       {value ? (
         <div className="relative group rounded-2xl overflow-hidden border border-stone-200 bg-stone-50 p-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 overflow-hidden">
-            <img
-              src={value}
-              alt="Uploaded Preview"
-              className="w-14 h-14 object-cover rounded-xl border border-stone-200 shrink-0"
-              onError={(e) => {
-                e.target.src = "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&q=80&w=300";
-              }}
-            />
+            {isPdf ? (
+              <div className="w-14 h-14 rounded-xl bg-[#f9efef] border border-[#7b1e1e]/20 flex flex-col items-center justify-center text-[#7b1e1e] shrink-0 shadow-xs">
+                <FaFilePdf className="text-2xl" />
+                <span className="text-[9px] font-extrabold uppercase">PDF</span>
+              </div>
+            ) : (
+              <img
+                src={value}
+                alt="Uploaded Preview"
+                className="w-14 h-14 object-cover rounded-xl border border-stone-200 shrink-0"
+                onError={(e) => {
+                  e.target.src = "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&q=80&w=300";
+                }}
+              />
+            )}
             <div className="overflow-hidden">
-              <span className="flex items-center gap-1 text-xs font-semibold text-emerald-700">
-                <FaCheckCircle className="text-[11px]" /> Image Uploaded
+              <span className="flex items-center gap-1 text-xs font-semibold text-[#7b1e1e]">
+                <FaCheckCircle className="text-[11px]" /> {isPdf ? "PDF Document Uploaded" : "File Uploaded"}
               </span>
               <p className="text-[11px] text-stone-500 truncate max-w-xs mt-0.5">{value}</p>
             </div>
@@ -74,8 +83,8 @@ export default function ImageUploadInput({ label, value, onChange, placeholder =
           <button
             type="button"
             onClick={handleClear}
-            className="p-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition text-xs flex items-center gap-1 font-semibold"
-            title="Remove picture"
+            className="p-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition text-xs flex items-center gap-1 font-semibold cursor-pointer"
+            title="Remove file"
           >
             <FaTrash /> Remove
           </button>
@@ -86,16 +95,16 @@ export default function ImageUploadInput({ label, value, onChange, placeholder =
             {uploading ? (
               <div className="flex flex-col items-center text-[#7b1e1e]">
                 <FaSpinner className="animate-spin text-2xl mb-2" />
-                <span className="text-xs font-bold">Uploading picture...</span>
+                <span className="text-xs font-bold">Uploading file...</span>
               </div>
             ) : (
               <div className="flex flex-col items-center text-stone-600">
                 <FaCloudUploadAlt className="text-3xl text-[#7b1e1e] mb-1.5" />
                 <span className="text-xs font-bold text-[#4a0e0e] mb-0.5">
-                  Click or drag image file here to upload
+                  Click or drag file here to upload
                 </span>
                 <span className="text-[11px] text-stone-500">
-                  {placeholder} (PNG, JPG, WEBP, GIF up to 10MB)
+                  {placeholder} (PDF, PNG, JPG, WEBP up to 10MB)
                 </span>
               </div>
             )}
